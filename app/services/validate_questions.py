@@ -1,5 +1,5 @@
-from ..crud import get_question_group
-from app.schemas.questions import (
+from ..mongo.questions_crud import get_question_group
+from ..schemas.questions import (
     FullQuestionGroup,
     AnswerStatus,
     QuestionStatus,

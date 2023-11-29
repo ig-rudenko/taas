@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 
-from ..crud import (
+from ..mongo.questions_crud import (
     get_all_question_groups,
     get_question_group,
     create_question_group,
@@ -9,7 +9,7 @@ from ..crud import (
     delete_question_group,
 )
 from ..decorators import handle_mongo_exceptions
-from ..service.validate_questions import validate_questions, ValidateException
+from ..services.validate_questions import validate_questions, ValidateException
 from ..schemas.questions import (
     QuestionGroup,
     CreateUpdateQuestionGroup,
