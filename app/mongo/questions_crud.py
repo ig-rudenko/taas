@@ -21,10 +21,13 @@ def get_question_group(group_id: str) -> dict:
     return question_group
 
 
-def create_question_group(question_group: CreateUpdateQuestionGroup) -> dict:
-    inserted_id = mongodb.questions_collection.insert_one(
-        question_group.model_dump()
-    ).inserted_id
+def create_question_group(
+    question_group: CreateUpdateQuestionGroup, user_id: str
+) -> dict:
+    data = question_group.model_dump()
+    data.update({"user_id": ObjectId(user_id)})
+
+    inserted_id = mongodb.questions_collection.insert_one(data).inserted_id
     return get_question_group(inserted_id)
 
 

@@ -1,0 +1,8 @@
+fastapi
+pymongo
+pydantic
+starlette
+email-validator
+passlib
+bcrypt
+python-jose[cryptography]

@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 
-from .handlers import questions
+from .handlers import questions, auth
 from .mongo import mongodb
 
 app = FastAPI()
 
 app.include_router(questions.router)
+app.include_router(auth.router)
 
 
 @app.on_event("startup")
