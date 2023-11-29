@@ -71,6 +71,7 @@ class FullQuestionGroup(BaseModel):
 class MinimalQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
+    user_id: str
 
 
 class QuestionGroupResult(BaseModel):

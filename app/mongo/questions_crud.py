@@ -1,14 +1,17 @@
 from bson import ObjectId
 
 from app.mongo import mongodb, DoesNotExistError
-from app.schemas.questions import CreateUpdateQuestionGroup
+from app.schemas.questions import CreateUpdateQuestionGroup, MinimalQuestionGroup
 
 
-def get_all_question_groups(limit: int = 100) -> list[dict]:
+def get_all_question_groups(limit: int = 100) -> list[MinimalQuestionGroup]:
     result = []
-    records = mongodb.questions_collection.find({}, {"_id": 1, "name": 1}).limit(limit)
+    records = mongodb.questions_collection.find(
+        {}, {"_id": 1, "name": 1, "user_id": 1}
+    ).limit(limit)
     for question in records:
         question["_id"] = str(question["_id"])
+        question["user_id"] = str(question["user_id"])
         result.append(question)
     return result
 
