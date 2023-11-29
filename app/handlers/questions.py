@@ -10,7 +10,7 @@ from ..crud import (
 )
 from ..decorators import handle_mongo_exceptions
 from ..service.validate_questions import validate_questions, ValidateException
-from ..schema import (
+from ..schemas.questions import (
     QuestionGroup,
     CreateUpdateQuestionGroup,
     QuestionGroupResult,

@@ -1,7 +1,7 @@
 from bson import ObjectId
 
 from .mongo import mongodb, DoesNotExistError
-from .schema import CreateUpdateQuestionGroup
+from .schemas.questions import CreateUpdateQuestionGroup
 
 
 def get_all_question_groups(limit: int = 100) -> list[dict]:

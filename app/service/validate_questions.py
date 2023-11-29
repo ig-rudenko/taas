@@ -1,7 +1,5 @@
-from bson import ObjectId
-
 from ..crud import get_question_group
-from ..schema import (
+from app.schemas.questions import (
     FullQuestionGroup,
     AnswerStatus,
     QuestionStatus,
