@@ -18,6 +18,7 @@ def get_question_group(group_id: str) -> dict:
     if question_group is None:
         raise DoesNotExistError("Question group does not exist")
     question_group["_id"] = str(question_group["_id"])
+    question_group["user_id"] = str(question_group["user_id"])
     return question_group
 
 

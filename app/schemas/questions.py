@@ -37,6 +37,7 @@ class CreateQuestion(Question):
 class QuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
+    user_id: str
     questions: list[Question]
 
 
@@ -63,6 +64,7 @@ class CreateUpdateQuestionGroup(BaseModel):
 class FullQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
+    user_id: str
     questions: list[CreateQuestion]
 
 

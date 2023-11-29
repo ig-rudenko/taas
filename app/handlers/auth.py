@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
-from starlette.responses import Response
 
 from ..decorators import handle_mongo_exceptions
 from ..mongo import DoesNotExistError
 from ..schemas.auth import TokenPair, AccessToken, RefreshToken
-from ..schemas.users import User
+from ..schemas.users import MinimalUser, CreateUser, UserCredentials
 from ..mongo.users_crud import get_user, create_user
 from ..services.auth import (
     CredentialsException,
@@ -18,15 +17,16 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 # Регистрация пользователя
-@router.post("/register")
+@router.post(
+    "/register", response_model=MinimalUser, status_code=status.HTTP_201_CREATED
+)
 @handle_mongo_exceptions
-def register(user: User):
+def register(user: CreateUser):
     """Регистрация нового пользователя"""
     try:
         get_user(username=user.username)
     except DoesNotExistError:
-        create_user(user)
-        return Response(status_code=status.HTTP_201_CREATED)
+        return create_user(user)
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -35,7 +35,7 @@ def register(user: User):
 
 
 @router.post("/token", response_model=TokenPair)
-def get_tokens(user: User):
+def get_tokens(user: UserCredentials):
     """Получение пары JWT"""
     try:
         user_model = get_user(username=user.username)

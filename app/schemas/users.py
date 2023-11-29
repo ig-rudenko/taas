@@ -10,7 +10,7 @@ class CreateUser(BaseModel):
     surname: str = Field(default="", max_length=100)
     first_name: str = Field(default="", max_length=100)
     last_name: str = Field(default="", max_length=100)
-    registration_date: datetime = Field(default_factory=datetime)
+    registration_date: datetime = Field(default_factory=datetime.now)
 
     @field_validator("username")
     def username_alphanumeric(cls, v):
@@ -40,6 +40,11 @@ class CreateUser(BaseModel):
 
 class User(CreateUser):
     id: str = Field(..., alias="_id")
+
+
+class UserCredentials(BaseModel):
+    username: str = Field(..., max_length=100)
+    password: str = Field(..., max_length=100)
 
 
 class MinimalUser(BaseModel):
