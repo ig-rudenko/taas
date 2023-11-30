@@ -4,34 +4,31 @@ from pydantic import BaseModel, Field
 
 
 class Answer(BaseModel):
-    text: str
+    text: str = Field(..., max_length=1024)
 
 
-class CreateAnswer(Answer):
+class FullAnswer(Answer):
     is_valid: bool = Field(default=False)
 
 
-class AnswerStatus(Answer):
+class AnswerResul(Answer):
     is_valid: bool
     true_valid: bool
 
 
 class Question(BaseModel):
-    text: str
+    text: str = Field(..., max_length=2048)
     answers: list[Answer]
-    image: str = Field(default="")
+    image: str = Field(default="", max_length=1024)
 
 
-class QuestionStatus(BaseModel):
-    text: str
-    answers: list[AnswerStatus]
-    image: str = Field(default="")
-    explanation: str = Field(default="")
+class FullQuestion(Question):
+    answers: list[FullAnswer]
+    explanation: str = Field(default="", max_length=2048)
 
 
-class CreateQuestion(Question):
-    explanation: str = Field(default="")
-    answers: list[CreateAnswer]
+class QuestionResult(FullQuestion):
+    answers: list[AnswerResul]
 
 
 class QuestionGroup(BaseModel):
@@ -39,50 +36,35 @@ class QuestionGroup(BaseModel):
     name: str
     user_id: str
     tags: list[str]
+    questions: list[Question]
+    timeout_minutes: int = Field(
+        default=0, description="Время для повторного прохождения"
+    )
+    completion_time_minutes: int = Field(
+        default=0, description="Время для прохождения теста"
+    )
     created_at: datetime
     updated_at: datetime
-    questions: list[Question]
 
 
 class UpdateQuestionGroup(BaseModel):
-    name: str
+    name: str = Field(..., max_length=256)
     tags: list[str]
-    questions: list[CreateQuestion]
-    updated_at: datetime = Field(default_factory=datetime.now)
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "name": "Название группы тестов",
-                "tags": ["python", "easy"],
-                "questions": [
-                    {
-                        "text": "Описание вопроса",
-                        "image": "https://www.example.com/images/img.png",
-                        "answers": [
-                            {"text": "Вариант ответа 1", "is_valid": True},
-                            {"text": "Вариант ответа 2"},
-                        ],
-                        "explanation": "Объяснение верного ответа.",
-                    }
-                ],
-            }
-        }
+    questions: list[FullQuestion]
+    timeout_minutes: int = Field(
+        default=0, description="Время для повторного прохождения"
+    )
+    completion_time_minutes: int = Field(
+        default=0, description="Время для прохождения теста"
+    )
 
 
 class CreateQuestionGroup(UpdateQuestionGroup):
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
+    pass
 
 
-class FullQuestionGroup(BaseModel):
-    id: str = Field(..., alias="_id")
-    name: str
-    user_id: str
-    tags: list[str]
-    created_at: datetime
-    updated_at: datetime
-    questions: list[CreateQuestion]
+class FullQuestionGroup(QuestionGroup):
+    questions: list[FullQuestion]
 
 
 class ValidateQuestionGroup(BaseModel):
@@ -96,6 +78,8 @@ class MinimalQuestionGroup(BaseModel):
     user_id: str
     created_at: datetime
     updated_at: datetime
+    timeout_minutes: int = Field(..., description="Время для повторного прохождения")
+    completion_time_minutes: int = Field(..., description="Время для прохождения теста")
     tags: list[str]
 
 
@@ -103,8 +87,10 @@ class QuestionGroupResult(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
     tags: list[str]
+    timeout_minutes: int = Field(..., description="Время для повторного прохождения")
+    completion_time_minutes: int = Field(..., description="Время для прохождения теста")
     created_at: datetime
     updated_at: datetime
-    questions: list[QuestionStatus]
+    questions: list[QuestionResult]
     total_score: int
     user_score: int

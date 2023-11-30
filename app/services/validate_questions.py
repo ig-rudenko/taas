@@ -1,8 +1,8 @@
 from ..mongo.questions_crud import get_question_group
 from ..schemas.questions import (
     FullQuestionGroup,
-    AnswerStatus,
-    QuestionStatus,
+    AnswerResul,
+    QuestionResult,
     QuestionGroupResult,
     ValidateQuestionGroup,
 )
@@ -56,7 +56,7 @@ def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResu
 
             # Отмечаем статус варианта ответа.
             answers_status.append(
-                AnswerStatus(
+                AnswerResul(
                     text=valid_answer.text,
                     is_valid=user_answer_is_valid,
                     true_valid=valid_answer.is_valid,
@@ -69,7 +69,7 @@ def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResu
 
         # Добавляем статус проверки текущего вопроса.
         questions_group_status.append(
-            QuestionStatus(
+            QuestionResult(
                 text=valid_answers.questions[i].text,
                 image=valid_answers.questions[i].image,
                 answers=answers_status,
@@ -83,6 +83,8 @@ def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResu
         tags=valid_answers.tags,
         created_at=valid_answers.created_at,
         updated_at=valid_answers.updated_at,
+        timeout_minutes=valid_answers.timeout_minutes,
+        completion_time_minutes=valid_answers.completion_time_minutes,
         questions=questions_group_status,
         total_score=total_questions,
         user_score=user_score,

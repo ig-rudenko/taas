@@ -11,7 +11,7 @@ from ..mongo import DoesNotExistError
 from ..schemas.auth import TokenPair
 from ..schemas.users import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your_secret_key")
 ALGORITHM = "HS512"
 USER_IDENTIFIER = "user_id"

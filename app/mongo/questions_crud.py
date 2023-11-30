@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from bson import ObjectId
 
 from app.mongo import mongodb, DoesNotExistError
@@ -22,6 +24,7 @@ def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
             "tags": 1,
             "created_at": 1,
             "updated_at": 1,
+            "timeout_minutes": 1,
         },
     )
     for question in records:
@@ -43,6 +46,8 @@ def get_question_group(group_id: str) -> dict:
 def create_question_group(question_group: CreateQuestionGroup, user_id: str) -> dict:
     data = question_group.model_dump()
     data.update({"user_id": ObjectId(user_id)})
+    data.update({"created_at": datetime.now()})
+    data.update({"updated_at": datetime.now()})
 
     inserted_id = mongodb.questions_collection.insert_one(data).inserted_id
     return get_question_group(inserted_id)
@@ -52,6 +57,7 @@ def update_question_group(group_id: str, question_group: UpdateQuestionGroup) ->
     record = get_question_group(group_id)
     new_data = question_group.model_dump()
     new_data.update({"created_at": record["created_at"]})
+    new_data.update({"updated_at": datetime.now()})
 
     matched_count = mongodb.questions_collection.update_one(
         filter={"_id": ObjectId(group_id)},
