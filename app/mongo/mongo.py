@@ -12,6 +12,7 @@ class MongoDatabase:
         self._db = None
         self._questions_collection = None
         self._users_collection = None
+        self._passed_questions = None
 
     def init(self):
         uri = os.environ.get("MONGODB_URI")
@@ -22,6 +23,7 @@ class MongoDatabase:
 
         self._questions_collection: Collection = self._db.get_collection("questions")
         self._users_collection: Collection = self._db.get_collection("users")
+        self._passed_questions: Collection = self._db.get_collection("passed_questions")
 
     @property
     def questions_collection(self) -> Collection:
@@ -34,6 +36,12 @@ class MongoDatabase:
         if self._users_collection is None:
             raise Exception("Users collection not initialized")
         return self._users_collection
+
+    @property
+    def passed_questions(self) -> Collection:
+        if self._passed_questions is None:
+            raise Exception("Passed questions collection not initialized")
+        return self._passed_questions
 
     def shutdown(self):
         if self._client is not None:
