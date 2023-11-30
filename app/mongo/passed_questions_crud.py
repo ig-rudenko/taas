@@ -31,21 +31,15 @@ def get_passed_question(_id: str) -> PassedQuestion:
     return PassedQuestion(**record)
 
 
-def get_user_passed_question_list(
-    user_id: str, question_group_id: str
-) -> list[PassedQuestion]:
+def get_user_passed_question_list(user_id: str) -> list[PassedQuestion]:
     """
-    Возвращает список всех решений пользователем конкретной группы вопросов (теста).
+    Возвращает список всех решений пользователем групп вопросов (теста).
     Сортировка от новых записей к первым.
     """
-    records = mongodb.passed_questions.find(
-        {"user_id": ObjectId(user_id), "question_group_id": ObjectId(question_group_id)}
-    ).sort("created_at", pymongo.DESCENDING)
-    formatted_records = []
-    for record in records:
-        record = _format_passed_question(record)
-        formatted_records.append(PassedQuestion(**record))
-    return formatted_records
+    records = mongodb.passed_questions.find({"user_id": ObjectId(user_id)}).sort(
+        "created_at", pymongo.DESCENDING
+    )
+    return [PassedQuestion(**_format_passed_question(r)) for r in records]
 
 
 def create_passed_question(
