@@ -8,10 +8,13 @@ from app.schemas.questions import (
 )
 
 
-def get_all_question_groups(limit: int = 100) -> list[MinimalQuestionGroup]:
+def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
+    if filter_ is None:
+        filter_ = {}
+
     result = []
     records = mongodb.questions_collection.find(
-        {},
+        filter_,
         {
             "_id": 1,
             "name": 1,
@@ -20,7 +23,7 @@ def get_all_question_groups(limit: int = 100) -> list[MinimalQuestionGroup]:
             "created_at": 1,
             "updated_at": 1,
         },
-    ).limit(limit)
+    )
     for question in records:
         question["_id"] = str(question["_id"])
         question["user_id"] = str(question["user_id"])

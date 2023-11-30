@@ -28,7 +28,7 @@ router = APIRouter(prefix="/questions", tags=["questions"])
 
 @router.get("/groups", response_model=list[MinimalQuestionGroup])
 def list_question_groups_view():
-    return get_all_question_groups(limit=100)
+    return get_all_question_groups()
 
 
 @router.post(
