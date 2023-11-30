@@ -1,13 +1,25 @@
 from bson import ObjectId
 
 from app.mongo import mongodb, DoesNotExistError
-from app.schemas.questions import CreateUpdateQuestionGroup, MinimalQuestionGroup
+from app.schemas.questions import (
+    CreateQuestionGroup,
+    UpdateQuestionGroup,
+    MinimalQuestionGroup,
+)
 
 
 def get_all_question_groups(limit: int = 100) -> list[MinimalQuestionGroup]:
     result = []
     records = mongodb.questions_collection.find(
-        {}, {"_id": 1, "name": 1, "user_id": 1}
+        {},
+        {
+            "_id": 1,
+            "name": 1,
+            "user_id": 1,
+            "tags": 1,
+            "created_at": 1,
+            "updated_at": 1,
+        },
     ).limit(limit)
     for question in records:
         question["_id"] = str(question["_id"])
@@ -25,9 +37,7 @@ def get_question_group(group_id: str) -> dict:
     return question_group
 
 
-def create_question_group(
-    question_group: CreateUpdateQuestionGroup, user_id: str
-) -> dict:
+def create_question_group(question_group: CreateQuestionGroup, user_id: str) -> dict:
     data = question_group.model_dump()
     data.update({"user_id": ObjectId(user_id)})
 
@@ -35,9 +45,11 @@ def create_question_group(
     return get_question_group(inserted_id)
 
 
-def update_question_group(
-    group_id: str, question_group: CreateUpdateQuestionGroup
-) -> None:
+def update_question_group(group_id: str, question_group: UpdateQuestionGroup) -> None:
+    record = get_question_group(group_id)
+    new_data = question_group.model_dump()
+    new_data.update({"created_at": record["created_at"]})
+
     matched_count = mongodb.questions_collection.update_one(
         filter={"_id": ObjectId(group_id)},
         update={"$set": question_group.model_dump()},

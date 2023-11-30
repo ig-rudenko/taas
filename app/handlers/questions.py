@@ -15,10 +15,12 @@ from ..services.permissions import has_permission_to_question_group
 from ..services.validate_questions import validate_questions, ValidateException
 from ..schemas.questions import (
     QuestionGroup,
-    CreateUpdateQuestionGroup,
+    CreateQuestionGroup,
+    UpdateQuestionGroup,
     QuestionGroupResult,
     FullQuestionGroup,
     MinimalQuestionGroup,
+    ValidateQuestionGroup,
 )
 
 router = APIRouter(prefix="/questions", tags=["questions"])
@@ -33,7 +35,7 @@ def list_question_groups_view():
     "/groups", response_model=FullQuestionGroup, status_code=status.HTTP_201_CREATED
 )
 def create_question_group_view(
-    question: CreateUpdateQuestionGroup, user: User = Depends(get_current_user)
+    question: CreateQuestionGroup, user: User = Depends(get_current_user)
 ):
     return create_question_group(question, user.id)
 
@@ -44,11 +46,24 @@ def question_group_view(group_id: str):
     return get_question_group(group_id)
 
 
+@router.get("/group/{group_id}/full-access", response_model=FullQuestionGroup)
+@handle_mongo_exceptions
+def question_group_full_view(group_id: str, user: User = Depends(get_current_user)):
+    if not has_permission_to_question_group(
+        user_id=user.id, question_group_id=group_id
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to update this question group.",
+        )
+    return get_question_group(group_id)
+
+
 @router.put("/group/{group_id}")
 @handle_mongo_exceptions
 def update_question_group_view(
     group_id: str,
-    question: CreateUpdateQuestionGroup,
+    question: UpdateQuestionGroup,
     user: User = Depends(get_current_user),
 ):
     if not has_permission_to_question_group(
@@ -78,7 +93,7 @@ def delete_question_group_view(group_id: str, user: User = Depends(get_current_u
 
 @router.post("/validate", response_model=QuestionGroupResult)
 @handle_mongo_exceptions
-def validate_question_group_view(question_group_data: FullQuestionGroup):
+def validate_question_group_view(question_group_data: ValidateQuestionGroup):
     try:
         return validate_questions(question_group_data)
     except ValidateException as exc:

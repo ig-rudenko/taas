@@ -10,4 +10,4 @@ def has_permission_to_question_group(user_id: str, question_group_id: str) -> bo
     if result is None:
         raise DoesNotExistError
 
-    return result.get("user_id") == user_id
+    return str(result.get("user_id")) == user_id

@@ -4,6 +4,7 @@ from ..schemas.questions import (
     AnswerStatus,
     QuestionStatus,
     QuestionGroupResult,
+    ValidateQuestionGroup,
 )
 
 
@@ -11,7 +12,7 @@ class ValidateException(Exception):
     pass
 
 
-def validate_questions(user_answers: FullQuestionGroup) -> QuestionGroupResult:
+def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResult:
     total_questions = len(user_answers.questions)
     user_score = 0
 
@@ -77,15 +78,18 @@ def validate_questions(user_answers: FullQuestionGroup) -> QuestionGroupResult:
         )
 
     return QuestionGroupResult(
-        _id=user_answers.id,
-        name=user_answers.name,
+        _id=valid_answers.id,
+        name=valid_answers.name,
+        tags=valid_answers.tags,
+        created_at=valid_answers.created_at,
+        updated_at=valid_answers.updated_at,
         questions=questions_group_status,
         total_score=total_questions,
         user_score=user_score,
     )
 
 
-def _get_valid_answers(user_answers: FullQuestionGroup) -> FullQuestionGroup:
+def _get_valid_answers(user_answers: ValidateQuestionGroup) -> FullQuestionGroup:
     valid = get_question_group(user_answers.id)
     valid["_id"] = str(valid["_id"])
     return FullQuestionGroup(**valid)
