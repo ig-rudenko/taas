@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pymongo
 from bson import ObjectId
 
-from .mongo import mongodb
+from .mongo import mongodb, DoesNotExistError
 from ..schemas.questions import QuestionGroupResult
 from ..schemas.passed_questions import PassedQuestion
 
@@ -21,12 +21,14 @@ def get_last_passed_question(user_id: str, question_group_id: str) -> PassedQues
         },
         sort=[("created_at", pymongo.DESCENDING)],
     )
+    if record is None:
+        raise DoesNotExistError
     record = _format_passed_question(record)
-    return record
+    return PassedQuestion(**record)
 
 
 def get_passed_question(_id: str) -> PassedQuestion:
-    record = mongodb.passed_questions.find_one({"id": ObjectId(_id)})
+    record = mongodb.passed_questions.find_one({"_id": ObjectId(_id)})
     record = _format_passed_question(record)
     return PassedQuestion(**record)
 
@@ -59,6 +61,7 @@ def create_passed_question(
         "user_score": question_group.user_score,
     }
     inserted_id = mongodb.passed_questions.insert_one(data).inserted_id
+    print(inserted_id, type(inserted_id))
     return get_passed_question(inserted_id)
 
 

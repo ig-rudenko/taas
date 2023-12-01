@@ -97,3 +97,4 @@ def validate_question_group_view(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     else:
         create_passed_question(user_id=user.id, question_group=validated_question_group)
+        return validated_question_group

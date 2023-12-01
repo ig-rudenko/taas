@@ -7,6 +7,7 @@ from app.schemas.questions import (
     CreateQuestionGroup,
     UpdateQuestionGroup,
     MinimalQuestionGroup,
+    FullQuestionGroup,
 )
 
 
@@ -25,6 +26,7 @@ def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
             "created_at": 1,
             "updated_at": 1,
             "timeout_minutes": 1,
+            "completion_time_minutes": 1,
         },
     )
     for question in records:
@@ -34,16 +36,18 @@ def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
     return result
 
 
-def get_question_group(group_id: str) -> dict:
+def get_question_group(group_id: str) -> FullQuestionGroup:
     question_group = mongodb.questions_collection.find_one({"_id": ObjectId(group_id)})
     if question_group is None:
         raise DoesNotExistError("Question group does not exist")
     question_group["_id"] = str(question_group["_id"])
     question_group["user_id"] = str(question_group["user_id"])
-    return question_group
+    return FullQuestionGroup(**question_group)
 
 
-def create_question_group(question_group: CreateQuestionGroup, user_id: str) -> dict:
+def create_question_group(
+    question_group: CreateQuestionGroup, user_id: str
+) -> FullQuestionGroup:
     data = question_group.model_dump()
     data.update({"user_id": ObjectId(user_id)})
     data.update({"created_at": datetime.now()})
@@ -56,7 +60,7 @@ def create_question_group(question_group: CreateQuestionGroup, user_id: str) -> 
 def update_question_group(group_id: str, question_group: UpdateQuestionGroup) -> None:
     record = get_question_group(group_id)
     new_data = question_group.model_dump()
-    new_data.update({"created_at": record["created_at"]})
+    new_data.update({"created_at": record.created_at})
     new_data.update({"updated_at": datetime.now()})
 
     matched_count = mongodb.questions_collection.update_one(

@@ -22,6 +22,10 @@ class Question(BaseModel):
     image: str = Field(default="", max_length=1024)
 
 
+class ValidateQuestion(Question):
+    answers: list[FullAnswer]
+
+
 class FullQuestion(Question):
     answers: list[FullAnswer]
     explanation: str = Field(default="", max_length=2048)
@@ -69,7 +73,7 @@ class FullQuestionGroup(QuestionGroup):
 
 class ValidateQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
-    questions: list[Question]
+    questions: list[ValidateQuestion]
 
 
 class MinimalQuestionGroup(BaseModel):
