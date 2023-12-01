@@ -21,10 +21,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     "/register", response_model=MinimalUser, status_code=status.HTTP_201_CREATED
 )
 @handle_mongo_exceptions
-def register(user: CreateUser):
+async def register(user: CreateUser):
     """Регистрация нового пользователя"""
     try:
-        get_user(username=user.username)
+        await get_user(username=user.username)
     except DoesNotExistError:
         return create_user(user)
     else:
@@ -35,10 +35,10 @@ def register(user: CreateUser):
 
 
 @router.post("/token", response_model=TokenPair)
-def get_tokens(user: UserCredentials):
+async def get_tokens(user: UserCredentials):
     """Получение пары JWT"""
     try:
-        user_model = get_user(username=user.username)
+        user_model = await get_user(username=user.username)
     except DoesNotExistError:
         raise CredentialsException
 

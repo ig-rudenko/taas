@@ -10,7 +10,7 @@ from ..mongo.passed_questions_crud import get_last_passed_question
 from ..mongo.questions_crud import get_question_group
 
 
-def check_permission_to_question_group(
+async def check_permission_to_question_group(
     user_id: str,
     question_group_id: str,
     action: Literal["view", "update", "delete", "full-access"],
@@ -22,9 +22,9 @@ def check_permission_to_question_group(
     :param action: Название действия.
     """
     if action == "view":
-        check_permission_to_take_question_group(user_id, question_group_id)
+        await check_permission_to_take_question_group(user_id, question_group_id)
 
-    result = mongodb.questions_collection.find_one(
+    result = await mongodb.questions_collection.find_one(
         {"_id": ObjectId(question_group_id)}, {"user_id": 1}
     )
     if result is None:
@@ -37,7 +37,7 @@ def check_permission_to_question_group(
         )
 
 
-def check_permission_to_take_question_group(
+async def check_permission_to_take_question_group(
     user_id: str, question_group_id: str
 ) -> None:
     """
@@ -47,14 +47,14 @@ def check_permission_to_take_question_group(
     :param question_group_id: Идентификатор группы вопросов (теста).
     """
     try:
-        last = get_last_passed_question(
+        last = await get_last_passed_question(
             user_id=user_id, question_group_id=question_group_id
         )
     except DoesNotExistError:
         pass
 
     else:
-        question_group = get_question_group(question_group_id)
+        question_group = await get_question_group(question_group_id)
         if (
             question_group.timeout_minutes
             and last.created_at > datetime.now() - timedelta(minutes=60)

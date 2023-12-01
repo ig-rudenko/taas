@@ -11,7 +11,7 @@ from app.schemas.questions import (
 )
 
 
-def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
+async def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
     if filter_ is None:
         filter_ = {}
 
@@ -29,15 +29,17 @@ def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
             "completion_time_minutes": 1,
         },
     )
-    for question in records:
+    async for question in records:
         question["_id"] = str(question["_id"])
         question["user_id"] = str(question["user_id"])
         result.append(question)
     return result
 
 
-def get_question_group(group_id: str) -> FullQuestionGroup:
-    question_group = mongodb.questions_collection.find_one({"_id": ObjectId(group_id)})
+async def get_question_group(group_id: str) -> FullQuestionGroup:
+    question_group = await mongodb.questions_collection.find_one(
+        {"_id": ObjectId(group_id)}
+    )
     if question_group is None:
         raise DoesNotExistError("Question group does not exist")
     question_group["_id"] = str(question_group["_id"])
@@ -45,7 +47,7 @@ def get_question_group(group_id: str) -> FullQuestionGroup:
     return FullQuestionGroup(**question_group)
 
 
-def create_question_group(
+async def create_question_group(
     question_group: CreateQuestionGroup, user_id: str
 ) -> FullQuestionGroup:
     data = question_group.model_dump()
@@ -53,27 +55,27 @@ def create_question_group(
     data.update({"created_at": datetime.now()})
     data.update({"updated_at": datetime.now()})
 
-    inserted_id = mongodb.questions_collection.insert_one(data).inserted_id
-    return get_question_group(inserted_id)
+    result = await mongodb.questions_collection.insert_one(data)
+    return await get_question_group(result.inserted_id)
 
 
-def update_question_group(group_id: str, question_group: UpdateQuestionGroup) -> None:
-    record = get_question_group(group_id)
+async def update_question_group(
+    group_id: str, question_group: UpdateQuestionGroup
+) -> None:
+    record = await get_question_group(group_id)
     new_data = question_group.model_dump()
     new_data.update({"created_at": record.created_at})
     new_data.update({"updated_at": datetime.now()})
 
-    matched_count = mongodb.questions_collection.update_one(
+    result = await mongodb.questions_collection.update_one(
         filter={"_id": ObjectId(group_id)},
         update={"$set": question_group.model_dump()},
-    ).matched_count
-    if matched_count == 0:
+    )
+    if result.matched_count == 0:
         raise DoesNotExistError("Question group does not exist")
 
 
-def delete_question_group(group_id: str) -> None:
-    deleted_count = mongodb.questions_collection.delete_one(
-        {"_id": ObjectId(group_id)}
-    ).deleted_count
-    if deleted_count == 0:
+async def delete_question_group(group_id: str) -> None:
+    result = await mongodb.questions_collection.delete_one({"_id": ObjectId(group_id)})
+    if result.deleted_count == 0:
         raise DoesNotExistError("Question group does not exist")

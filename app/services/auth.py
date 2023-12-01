@@ -52,15 +52,13 @@ def create_jwt_token_pair(user_id: str) -> TokenPair:
     return TokenPair(accessToken=access_token, refreshToken=refresh_token)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """Получение текущего пользователя"""
     payload = _get_token_payload(token, "access")
 
     try:
-        user = get_user(_id=payload[USER_IDENTIFIER])
+        user = await get_user(_id=payload[USER_IDENTIFIER])
     except DoesNotExistError:
-        raise CredentialsException
-    if user is None:
         raise CredentialsException
     return user
 

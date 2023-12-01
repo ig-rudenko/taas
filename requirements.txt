@@ -1,5 +1,6 @@
 fastapi
 pymongo
+motor
 pydantic
 starlette
 email-validator

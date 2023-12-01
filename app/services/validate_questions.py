@@ -12,11 +12,13 @@ class ValidateException(Exception):
     pass
 
 
-def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResult:
+async def validate_questions(
+    user_answers: ValidateQuestionGroup,
+) -> QuestionGroupResult:
     total_questions = len(user_answers.questions)
     user_score = 0
 
-    valid_answers: FullQuestionGroup = get_question_group(user_answers.id)
+    valid_answers: FullQuestionGroup = await get_question_group(user_answers.id)
 
     if total_questions != len(valid_answers.questions):
         raise ValidateException(
@@ -77,7 +79,6 @@ def validate_questions(user_answers: ValidateQuestionGroup) -> QuestionGroupResu
             )
         )
 
-    print("RESULT")
     return QuestionGroupResult(
         _id=valid_answers.id,
         name=valid_answers.name,

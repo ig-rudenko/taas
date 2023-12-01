@@ -36,65 +36,71 @@ router = APIRouter(prefix="/questions", tags=["questions"])
 
 
 @router.get("/groups", response_model=list[MinimalQuestionGroup])
-def list_question_groups_view():
-    return get_all_question_groups()
+async def list_question_groups_view():
+    return await get_all_question_groups()
 
 
 @router.post(
     "/groups", response_model=FullQuestionGroup, status_code=status.HTTP_201_CREATED
 )
-def create_question_group_view(
+async def create_question_group_view(
     question: CreateQuestionGroup, user: User = Depends(get_current_user)
 ):
-    return create_question_group(question, user.id)
+    return await create_question_group(question, user.id)
 
 
 @router.get("/group/{group_id}", response_model=QuestionGroup)
 @handle_mongo_exceptions
-def question_group_view(group_id: str, user: User = Depends(get_current_user)):
-    check_permission_to_question_group(user.id, group_id, "view")
-    return get_question_group(group_id)
+async def question_group_view(group_id: str, user: User = Depends(get_current_user)):
+    await check_permission_to_question_group(user.id, group_id, "view")
+    return await get_question_group(group_id)
 
 
 @router.get("/group/{group_id}/full-access", response_model=FullQuestionGroup)
 @handle_mongo_exceptions
-def question_group_full_view(group_id: str, user: User = Depends(get_current_user)):
-    check_permission_to_question_group(user.id, group_id, "full-access")
-    return get_question_group(group_id)
+async def question_group_full_view(
+    group_id: str, user: User = Depends(get_current_user)
+):
+    await check_permission_to_question_group(user.id, group_id, "full-access")
+    return await get_question_group(group_id)
 
 
 @router.put("/group/{group_id}")
 @handle_mongo_exceptions
-def update_question_group_view(
+async def update_question_group_view(
     group_id: str, question: UpdateQuestionGroup, user: User = Depends(get_current_user)
 ):
-    check_permission_to_question_group(user.id, group_id, "update")
-    update_question_group(group_id, question)
+    await check_permission_to_question_group(user.id, group_id, "update")
+    await update_question_group(group_id, question)
 
 
 @router.delete("/group/{group_id}", status_code=status.HTTP_204_NO_CONTENT)
 @handle_mongo_exceptions
-def delete_question_group_view(group_id: str, user: User = Depends(get_current_user)):
-    check_permission_to_question_group(user.id, group_id, "delete")
-    delete_question_group(group_id)
+async def delete_question_group_view(
+    group_id: str, user: User = Depends(get_current_user)
+):
+    await check_permission_to_question_group(user.id, group_id, "delete")
+    await delete_question_group(group_id)
 
 
 @router.post("/validate", response_model=QuestionGroupResult)
 @handle_mongo_exceptions
-def validate_question_group_view(
+async def validate_question_group_view(
     question_group_data: ValidateQuestionGroup, user: User = Depends(get_current_user)
 ):
     """
     Проверяет переданную пользователем группу вопросов (тест).
     Если за последний час пользователь уже проходил данный тест, то вернется ошибка `403`.
     """
-    check_permission_to_take_question_group(
+    await check_permission_to_take_question_group(
         user_id=user.id, question_group_id=question_group_data.id
     )
     try:
-        validated_question_group = validate_questions(question_group_data)
+        validated_question_group = await validate_questions(question_group_data)
     except ValidateException as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     else:
-        create_passed_question(user_id=user.id, question_group=validated_question_group)
+        await create_passed_question(
+            user_id=user.id, question_group=validated_question_group
+        )
         return validated_question_group
