@@ -26,7 +26,7 @@ async def register(user: CreateUser):
     try:
         await get_user(username=user.username)
     except DoesNotExistError:
-        return create_user(user)
+        return await create_user(user)
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

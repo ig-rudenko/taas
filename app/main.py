@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 
 from .handlers import questions, auth, users, healthcheck
@@ -21,9 +23,15 @@ app.include_router(router=healthcheck.router)
 
 @app.on_event("startup")
 def startup_mongo():
-    mongodb.init()
+    mongo_uri = os.environ.get("MONGODB_URI")
+    database_name = os.environ.get("MONGODB_DATABASE")
+    if mongo_uri is None or database_name is None:
+        raise Exception(
+            "MONGODB_URI and MONGODB_DATABASE environment variables are required"
+        )
+    mongodb.init(mongo_uri, database_name)
 
 
 @app.on_event("shutdown")
-def startup_mongo():
+def shutdown_mongo():
     mongodb.shutdown()

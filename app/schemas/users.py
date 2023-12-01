@@ -53,3 +53,4 @@ class MinimalUser(BaseModel):
     surname: str
     first_name: str
     last_name: str
+    registration_date: datetime

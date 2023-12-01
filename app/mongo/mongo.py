@@ -16,15 +16,7 @@ class MongoDatabase:
         self._users_collection = None
         self._passed_questions = None
 
-    def init(self):
-        uri = os.environ.get("MONGODB_URI")
-        database_name = os.environ.get("MONGODB_DATABASE")
-        if uri is None or database_name is None:
-            raise Exception(
-                "MONGODB_URI and MONGODB_DATABASE environment variables are required"
-            )
-
-        # Create a new client and connect to the server
+    def init(self, uri: str, database_name: str) -> None:
         self._client = AsyncIOMotorClient(uri, server_api=ServerApi("1"))
         self._db: AsyncIOMotorDatabase = self._client[database_name]
 
