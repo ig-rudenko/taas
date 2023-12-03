@@ -24,6 +24,8 @@
     </div>
   </div>
 
+  <Footer/>
+
 </template>
 
 <script>
@@ -34,9 +36,11 @@ import Password from "primevue/password";
 import Toast from 'primevue/toast';
 
 import Menu from "@/components/Menu.vue";
+import Footer from "@/components/Footer.vue";
 
 export default {
   components: {
+    Footer,
     Button,
     Menu,
     InputText,

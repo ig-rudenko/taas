@@ -3,6 +3,7 @@ import PrimeVue from "primevue/config";
 import { createWebHistory } from "vue-router";
 import ToastService from 'primevue/toastservice';
 
+import "./main.css"
 import "./styles.min.css"
 import 'primeicons/primeicons.css'
 import "primevue/resources/themes/lara-light-teal/theme.css"

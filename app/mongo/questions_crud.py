@@ -34,6 +34,7 @@ async def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
                 "name": 1,
                 "user_id": 1,
                 "tags": 1,
+                "description": 1,
                 "created_at": 1,
                 "updated_at": 1,
                 "timeout_minutes": 1,

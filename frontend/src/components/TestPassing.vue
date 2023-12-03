@@ -1,5 +1,5 @@
 <template>
-  <Menu/>
+  <Menu :user="userData"/>
   <Toast/>
 
   <div v-if="testData" class="sticky top-0 p-3 bg-white border-bottom-1 border-200" style="z-index: 999">
@@ -67,6 +67,8 @@
 
   </Container>
 
+  <Footer/>
+  <ScrollTop/>
 
 </template>
 
@@ -75,21 +77,25 @@ import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import Knob from "primevue/knob";
+import ScrollTop from "primevue/scrolltop";
 import Toast from 'primevue/toast';
 
 import Container from "@/components/Container.vue";
 import Menu from "@/components/Menu.vue";
 import api from "@/services/api.js";
+import Footer from "@/components/Footer.vue";
 
 export default {
   name: "TestPassing",
   components: {
+    Footer,
     Badge,
     Button,
     Checkbox,
     Container,
     Knob,
     Menu,
+    ScrollTop,
     Toast,
   },
 
@@ -97,11 +103,14 @@ export default {
     return {
       testData: null,
       testFinished: false,
+      userData: null,
     }
   },
 
   mounted() {
     if (!this.loggedIn) this.$router.push("/login")
+
+    this.getMyself();
 
     api.get("questions/group/"+this.testID).then(
         res => this.testData = res.data,
@@ -154,6 +163,16 @@ export default {
       } else {
         return ["p-3", "border-left-3", "border-red-600"]
       }
+    },
+
+    getMyself() {
+      api.get("user/myself").then(
+          res => this.userData = res.data,
+          error => {
+            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
+            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+          }
+      )
     },
 
     submitTest() {

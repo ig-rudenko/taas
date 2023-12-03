@@ -41,6 +41,7 @@ class QuestionGroup(BaseModel):
     user_id: str
     tags: list[str]
     questions: list[Question]
+    description: str
     timeout_minutes: int = Field(
         default=0, description="Время для повторного прохождения"
     )
@@ -55,6 +56,7 @@ class UpdateQuestionGroup(BaseModel):
     name: str = Field(..., max_length=256)
     tags: list[str]
     questions: list[FullQuestion]
+    description: str = Field(default="", max_length=2048)
     timeout_minutes: int = Field(
         default=0, description="Время для повторного прохождения"
     )
@@ -81,6 +83,7 @@ class MinimalQuestionGroup(BaseModel):
     name: str
     user_id: str
     username: str
+    description: str
     created_at: datetime
     updated_at: datetime
     timeout_minutes: int = Field(..., description="Время для повторного прохождения")
@@ -92,6 +95,7 @@ class QuestionGroupResult(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
     tags: list[str]
+    description: str
     timeout_minutes: int = Field(..., description="Время для повторного прохождения")
     completion_time_minutes: int = Field(..., description="Время для прохождения теста")
     created_at: datetime

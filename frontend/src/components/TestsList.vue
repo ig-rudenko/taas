@@ -1,5 +1,5 @@
 <template>
-  <Menu/>
+  <Menu :user="userData"/>
   <Toast/>
 
   <Container>
@@ -27,7 +27,7 @@
           </template>
           <template #content>
             <div class="m-0">
-              <div v-if="test.description">{{test.description}}</div>
+              <div v-if="test.description" class="mb-3">{{test.description}}</div>
               <div><i class="pi pi-user"/> {{test.username}}</div>
               <p v-if="test.completion_time_minutes > 0">Время прохождения: <i class="pi pi-stopwatch mr-1"></i>{{test.completion_time_minutes}} минут</p>
               <p v-else>Время на прохождение теста неограниченно</p>
@@ -42,6 +42,9 @@
     </div>
   </Container>
 
+  <Footer/>
+  <ScrollTop/>
+
 </template>
 
 <script>
@@ -49,22 +52,26 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Chips from "primevue/chips";
 import InputText from "primevue/inputtext";
+import ScrollTop from "primevue/scrolltop";
 import Tag from "primevue/tag";
 import Toast from 'primevue/toast';
 
 import Menu from "@/components/Menu.vue";
 import Container from "@/components/Container.vue";
 import api from "@/services/api.js";
+import Footer from "@/components/Footer.vue";
 
 export default {
   name: "TestsList",
   components: {
+    Footer,
     Button,
     Card,
     Chips,
     Container,
     InputText,
     Menu,
+    ScrollTop,
     Tag,
     Toast,
   },
@@ -74,10 +81,14 @@ export default {
       allTests: [],
       search: "",
       selectedTags: [],
+      userData: null,
     }
   },
 
   computed: {
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    },
     filteredTests() {
       return this.allTests.filter(
           elem => {
@@ -88,6 +99,8 @@ export default {
   },
 
   mounted() {
+    if (this.loggedIn) this.getMyself();
+
     api.get("questions/groups").then(
         res => {
           this.allTests = res.data
@@ -103,6 +116,15 @@ export default {
     filterByTestName(test) { return this.search.length === 0 || test.name.includes(this.search) },
     filterByTags(test) {
       return this.selectedTags.length === 0 || this.selectedTags.every(tag => {return test.tags.includes(tag)})
+    },
+    getMyself() {
+      api.get("user/myself").then(
+          res => this.userData = res.data,
+          error => {
+            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
+            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+          }
+      )
     }
   }
 }

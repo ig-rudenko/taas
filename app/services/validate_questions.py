@@ -83,6 +83,7 @@ async def validate_questions(
         _id=valid_answers.id,
         name=valid_answers.name,
         tags=valid_answers.tags,
+        description=valid_answers.description,
         created_at=valid_answers.created_at,
         updated_at=valid_answers.updated_at,
         timeout_minutes=valid_answers.timeout_minutes,

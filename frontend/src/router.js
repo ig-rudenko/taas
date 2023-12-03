@@ -6,6 +6,7 @@ import Account from "@/components/Account.vue";
 import Home from "@/components/Home.vue";
 import TestsList from "@/components/TestsList.vue";
 import TestPassing from "@/components/TestPassing.vue";
+import CreateTest from "@/components/CreateTest.vue";
 
 
 const routes = [
@@ -15,6 +16,7 @@ const routes = [
     { path: "/register", component: Register },
     { path: "/login", component: Login },
     { path: "/account", component: Account },
+    { path: "/create", component: CreateTest },
 ]
 
 export default function (history) {

@@ -58,10 +58,15 @@ async def check_permission_to_take_question_group(
         question_group = await get_question_group(question_group_id)
         if (
             question_group.timeout_minutes
-            and last.created_at > datetime.now() - timedelta(minutes=60)
+            and last.created_at
+            > datetime.now() - timedelta(minutes=question_group.timeout_minutes)
         ):
-            time_elapsed = last.created_at - (datetime.now() - timedelta(minutes=60))
+            time_elapsed = last.created_at - (
+                datetime.now() - timedelta(minutes=question_group.timeout_minutes)
+            )
+            seconds = time_elapsed.total_seconds()
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Данный тест повторно вы сможете пройти через {str(time_elapsed.total_seconds() / 60)} мин.",
+                detail=f"Данный тест повторно вы сможете пройти через"
+                f" {int(seconds / 60)} мин. {int(seconds % 60)} c.",
             )

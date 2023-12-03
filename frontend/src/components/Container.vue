@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-content-center">
+  <div id="content" class="flex justify-content-center">
     <div class="main-container">
       <slot></slot>
     </div>
@@ -14,7 +14,13 @@ export default {
 
 <style scoped>
 .main-container {
-  width: 50%
+  width: 50%;
+  margin-bottom: 2rem;
+}
+
+#content {
+  display: block;
+  flex: 1 0 auto;
 }
 
 @media (width < 1111px) {
