@@ -23,6 +23,7 @@ async def check_permission_to_question_group(
     """
     if action == "view":
         await check_permission_to_take_question_group(user_id, question_group_id)
+        return
 
     result = await mongodb.questions_collection.find_one(
         {"_id": ObjectId(question_group_id)}, {"user_id": 1}

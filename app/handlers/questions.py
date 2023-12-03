@@ -12,7 +12,6 @@ from ..mongo.questions_crud import (
 )
 from ..mongo.passed_questions_crud import (
     create_passed_question,
-    get_last_passed_question,
 )
 from ..decorators import handle_mongo_exceptions
 from ..schemas.users import User

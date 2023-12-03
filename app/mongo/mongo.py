@@ -1,5 +1,3 @@
-import os
-
 from motor.motor_asyncio import (
     AsyncIOMotorClient,
     AsyncIOMotorDatabase,
