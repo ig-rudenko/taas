@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from pymongo.errors import DuplicateKeyError
 from starlette import status
 
 from ..decorators import handle_mongo_exceptions
@@ -24,13 +25,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user: CreateUser):
     """Регистрация нового пользователя"""
     try:
-        await get_user(username=user.username)
-    except DoesNotExistError:
         return await create_user(user)
-    else:
+    except DuplicateKeyError as exc:
+        keys = list(exc.details["keyValue"].keys())
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered",
+            detail=f"Пользователь с указанным {','.join(keys)} уже зарегистрирован",
         )
 
 

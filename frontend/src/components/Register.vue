@@ -87,7 +87,8 @@ export default {
             this.$router.push("/login")
           },
           (error) => {
-            let message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            console.log(error)
+            let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
             this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
           }
       );

@@ -27,6 +27,11 @@ class MongoDatabase:
         self._passed_questions: AsyncIOMotorCollection = self._db.get_collection(
             "passed_questions"
         )
+        self._create_indexes()
+
+    def _create_indexes(self):
+        self.users_collection.create_index("username", unique=True)
+        self.users_collection.create_index("email", unique=True)
 
     @property
     def questions_collection(self) -> AsyncIOMotorCollection:

@@ -49,8 +49,11 @@ class UserCredentials(BaseModel):
 
 class MinimalUser(BaseModel):
     username: str
-    email: EmailStr
     surname: str
     first_name: str
     last_name: str
     registration_date: datetime
+
+
+class SelfUser(MinimalUser):
+    email: EmailStr
