@@ -3,13 +3,16 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr, field_validator
 
 
-class CreateUser(BaseModel):
-    username: str = Field(..., max_length=100)
-    password: str = Field(..., max_length=100)
-    email: EmailStr
+class UpdateUser(BaseModel):
     surname: str = Field(default="", max_length=100)
     first_name: str = Field(default="", max_length=100)
     last_name: str = Field(default="", max_length=100)
+
+
+class CreateUser(UpdateUser):
+    username: str = Field(..., max_length=100)
+    password: str = Field(..., max_length=100)
+    email: EmailStr
     registration_date: datetime = Field(default_factory=datetime.now)
 
     @field_validator("username")

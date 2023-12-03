@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div v-if="!data.length">
+    <div v-if="data && !data.length">
       Вы не прошли ни единого теста
     </div>
 

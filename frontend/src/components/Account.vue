@@ -45,7 +45,7 @@
           <InputText id="last_name" v-model="userData.last_name"/>
         </div>
       </div>
-      <Button label="Обновить" />
+      <Button label="Обновить" @click="updateUserData" />
     </div>
 
 
@@ -122,6 +122,16 @@ export default {
     formatDate(date) {
       let d = new Date(date)
       return new Intl.DateTimeFormat("ru", {day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "numeric"}).format(d)
+    },
+
+    updateUserData() {
+      api.patch("user/myself", this.userData).then(
+          () => {this.$toast.add({ severity: 'success', summary: 'Success', detail: "Данные пользователя обновлены", life: 3000 });},
+          error => {
+            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
+            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+          }
+      )
     }
   }
 }

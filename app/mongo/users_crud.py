@@ -1,8 +1,8 @@
 from bson import ObjectId
 
-from ..schemas.users import User, CreateUser
-from ..services.encrypt import encrypt_password
 from .mongo import mongodb, DoesNotExistError
+from ..schemas.users import User, CreateUser, UpdateUser
+from ..services.encrypt import encrypt_password
 
 
 async def get_user(**kwargs) -> User:
@@ -20,3 +20,12 @@ async def create_user(user: CreateUser) -> User:
     user.password = encrypt_password(user.password)
     result = await mongodb.users_collection.insert_one(user.model_dump())
     return await get_user(_id=result.inserted_id)
+
+
+async def update_user(user_id: str, new_data: UpdateUser) -> None:
+    result = await mongodb.users_collection.update_one(
+        filter={"_id": ObjectId(user_id)},
+        update={"$set": new_data.model_dump()},
+    )
+    if result.matched_count == 0:
+        raise DoesNotExistError("User does not exist")
