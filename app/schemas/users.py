@@ -56,4 +56,5 @@ class MinimalUser(BaseModel):
 
 
 class SelfUser(MinimalUser):
+    id: str = Field(..., alias="_id")
     email: EmailStr

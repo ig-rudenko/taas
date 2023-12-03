@@ -92,7 +92,7 @@ export default {
           this.allTests = res.data
         },
         error => {
-          let message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+          let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
           this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
         }
     )

@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from .mongo import mongodb, DoesNotExistError
 from ..schemas.questions import QuestionGroupResult
-from ..schemas.passed_questions import PassedQuestion
+from ..schemas.passed_questions import PassedQuestion, PassedQuestionsDetail
 
 
 async def get_last_passed_question(
@@ -35,15 +35,46 @@ async def get_passed_question(_id: str) -> PassedQuestion:
     return PassedQuestion(**record)
 
 
-async def get_user_passed_question_list(user_id: str) -> list[PassedQuestion]:
+async def get_user_passed_question_list(user_id: str) -> list[PassedQuestionsDetail]:
     """
     Возвращает список всех решений пользователем групп вопросов (теста).
     Сортировка от новых записей к первым.
     """
-    records = await mongodb.passed_questions.find({"user_id": ObjectId(user_id)}).sort(
-        "created_at", pymongo.DESCENDING
-    )
-    return [PassedQuestion(**_format_passed_question(r)) for r in records]
+
+    pipeline = [
+        {
+            "$lookup": {
+                "from": "questions",
+                "localField": "question_group_id",
+                "foreignField": "_id",
+                "as": "question_group_data"
+            }
+        },
+        {
+            "$unwind": "$question_group_data"
+        },
+        {
+            "$match": {"user_id": ObjectId(user_id)}
+        },
+        {
+            "$sort": {"created_at": pymongo.DESCENDING}
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "question_group_id": 1,
+                "user_id": 1,
+                "created_at": 1,
+                "total_score": 1,
+                "user_score": 1,
+                "question_group_name": "$question_group_data.name"
+            }
+        }
+    ]
+
+    records = mongodb.passed_questions.aggregate(pipeline)
+
+    return [PassedQuestionsDetail(**_format_passed_question(r)) async for r in records]
 
 
 async def create_passed_question(

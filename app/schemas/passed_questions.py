@@ -9,3 +9,7 @@ class PassedQuestion(BaseModel):
     created_at: datetime
     total_score: int
     user_score: int
+
+
+class PassedQuestionsDetail(PassedQuestion):
+    question_group_name: str
