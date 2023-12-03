@@ -27,7 +27,8 @@
           </template>
           <template #content>
             <div class="m-0">
-              {{test.description}}
+              <div v-if="test.description">{{test.description}}</div>
+              <div><i class="pi pi-user"/> {{test.username}}</div>
               <p v-if="test.completion_time_minutes > 0">Время прохождения: <i class="pi pi-stopwatch mr-1"></i>{{test.completion_time_minutes}} минут</p>
               <p v-else>Время на прохождение теста неограниченно</p>
               <p v-if="test.timeout_minutes > 0">Время для повторной попытки теста: <i class="pi pi-stopwatch mr-1"></i>{{test.timeout_minutes}} минут</p>

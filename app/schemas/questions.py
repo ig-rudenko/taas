@@ -80,6 +80,7 @@ class MinimalQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
     user_id: str
+    username: str
     created_at: datetime
     updated_at: datetime
     timeout_minutes: int = Field(..., description="Время для повторного прохождения")

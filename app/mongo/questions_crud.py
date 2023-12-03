@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pymongo
 from bson import ObjectId
 
 from app.mongo import mongodb, DoesNotExistError
@@ -15,21 +16,36 @@ async def get_all_question_groups(filter_=None) -> list[MinimalQuestionGroup]:
     if filter_ is None:
         filter_ = {}
 
-    result = []
-    records = mongodb.questions_collection.find(
-        filter_,
+    pipeline = [
         {
-            "_id": 1,
-            "name": 1,
-            "user_id": 1,
-            "tags": 1,
-            "created_at": 1,
-            "updated_at": 1,
-            "timeout_minutes": 1,
-            "completion_time_minutes": 1,
+            "$lookup": {
+                "from": "users",
+                "localField": "user_id",
+                "foreignField": "_id",
+                "as": "user_data",
+            }
         },
-    )
-    async for question in records:
+        {"$unwind": "$user_data"},
+        {"$match": filter_},
+        {"$sort": {"created_at": pymongo.DESCENDING}},
+        {
+            "$project": {
+                "_id": 1,
+                "name": 1,
+                "user_id": 1,
+                "tags": 1,
+                "created_at": 1,
+                "updated_at": 1,
+                "timeout_minutes": 1,
+                "completion_time_minutes": 1,
+                "username": "$user_data.username",
+            }
+        },
+    ]
+
+    result = []
+
+    async for question in mongodb.questions_collection.aggregate(pipeline):
         question["_id"] = str(question["_id"])
         question["user_id"] = str(question["user_id"])
         result.append(question)
