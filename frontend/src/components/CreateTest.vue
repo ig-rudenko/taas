@@ -38,7 +38,7 @@
       <div v-for="(question, qID) in testData.questions" class="relative">
         <div :id="'question-'+(qID+1)" class="absolute" style="top: -100px"></div>
 
-        <div class="p-5 my-5 border-round border-1 border-300 hover:shadow-2 hover:bg-primary-50">
+        <div class="p-5 my-5 border-round border-1 border-300 hover:shadow-2 p-card">
 
           <Badge size="xlarge" class="absolute question-number" :value="'# ' + (qID + 1)" />
           <Button @click="deleteQuestion(qID)" class="absolute question-delete" icon="pi pi-times" size="small" severity="danger" rounded raised aria-label="Cancel" />
@@ -71,7 +71,7 @@
           </div>
 
           <!-- Объяснение верного ответа -->
-          <div class="mt-4 p-3 border-1 border-200 border-round bg-teal-100">
+          <div class="mt-4 p-3 border-1 border-200 border-round p-message-success p-message">
             <div class="flex flex-column gap-2 my-2">
               <label :for="'exp-'+qID">Объяснение верного ответа</label>
               <Textarea :id="'exp-'+qID" v-model="question.explanation" rows="6"/>
@@ -104,16 +104,17 @@ import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import Chips from "primevue/chips";
-import Container from "@/components/Container.vue";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
-import Menu from "@/components/Menu.vue";
+import Message from "primevue/message";
 import ScrollTop from "primevue/scrolltop";
 import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
 
 import api from "@/services/api.js";
+import Container from "@/components/Container.vue";
 import Footer from "@/components/Footer.vue";
+import Menu from "@/components/Menu.vue";
 
 export default {
   name: "CreateTest",
@@ -127,6 +128,7 @@ export default {
     InputNumber,
     InputText,
     Menu,
+    Message,
     ScrollTop,
     Textarea,
     Toast,

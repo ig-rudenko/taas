@@ -7,7 +7,7 @@
       <div class="mr-5">
         Tests as a Service
       </div>
-      <a href="https://github.com/ig-rudenko/taas" class="text-black-alpha-90" target="_blank">
+      <a href="https://github.com/ig-rudenko/taas" class="no-decoration" target="_blank">
         <i class="pi pi-github" style="font-size: 2.5rem"/>
       </a>
     </div>
@@ -31,5 +31,9 @@ export default {
 
 .footer {
   flex: 0 0 auto;
+}
+
+.no-decoration {
+  text-decoration: none;
 }
 </style>

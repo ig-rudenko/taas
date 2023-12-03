@@ -6,7 +6,6 @@ import ToastService from 'primevue/toastservice';
 import "./main.css"
 import "./styles.min.css"
 import 'primeicons/primeicons.css'
-import "primevue/resources/themes/lara-light-teal/theme.css"
 import App from './App.vue'
 import createRouter from "@/router.js";
 

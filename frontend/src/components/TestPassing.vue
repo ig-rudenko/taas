@@ -2,25 +2,34 @@
   <Menu :user="userData"/>
   <Toast/>
 
-  <div v-if="testData" class="sticky top-0 p-3 bg-white border-bottom-1 border-200" style="z-index: 999">
-    <template v-for="(question, qID) in testData.questions">
-      <a :href="'#question-'+(qID+1)">
-        <Button :label="String(qID+1)" raised rounded size="small"
-                :outlined="!isQuestionHasAnswer(question)"
-                :severity="questionCorrect(question)?'':'danger'" />
-      </a>
-    </template>
+  <div v-if="testData" class="sticky top-0 p-3 p-card border-bottom-1 border-200 flex justify-content-between align-items-center" style="z-index: 999">
+    <div class="flex flex-wrap">
+      <div v-for="(question, qID) in testData.questions">
+        <a :href="'#question-'+(qID+1)">
+          <Button :label="String(qID+1)" raised rounded size="small"
+                  :outlined="!isQuestionHasAnswer(question)"
+                  :severity="questionCorrect(question)?'':'danger'" />
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <h2 v-if="secondsLeft !== 0" :class="timerClasses">{{secondsLeftString}}</h2>
+      <h2 v-if="timeIsUp" class="m-0 mr-3 bg-red-500 p-2 text-white border-round">Время вышло!</h2>
+    </div>
+
   </div>
 
   <Container v-if="testData">
 
 
-    <h2 class="m-5">{{testData.name}}</h2>
+    <h2 class="my-5">{{testData.name}}</h2>
+    <p>{{testData.description}}</p>
 
     <div v-for="(question, qID) in testData.questions" class="relative">
       <div :id="'question-'+(qID+1)" class="absolute" style="top: -100px"></div>
 
-      <div class="relative p-5 my-5 border-round border-1 border-300 hover:shadow-2 hover:bg-primary-50">
+      <div class="relative p-5 my-5 border-round border-1 border-300 hover:shadow-2 p-card">
 
         <Badge size="xlarge" class="absolute question-number"
                :value="'# ' + (qID + 1)"
@@ -36,7 +45,8 @@
           </div>
         </div>
 
-        <div v-if="question.explanation && isTestPassed" class="mt-3 p-3 border-1 border-200 border-round bg-teal-100">
+        <!-- Верный ответ -->
+        <div v-if="question.explanation && isTestPassed" class="mt-3 p-3 border-1 border-200 border-round p-message-success p-message">
           {{ formatText(question.explanation) }}
         </div>
 
@@ -61,8 +71,8 @@
     </div>
 
     <div class="my-5 flex justify-content-center">
-      <Button v-if="isAllQuestionsHasAnswer && !testFinished" label="Завершить тест" @click="submitTest" />
-      <Button v-else-if="testFinished" label="Вернуться к списку" @click="$router.push('/tests')" />
+      <Button v-if="isAllQuestionsHasAnswer && !testFinished && !timeIsUp" label="Завершить тест" @click="submitTest" />
+      <Button v-else-if="testFinished || timeIsUp" label="Вернуться к списку" @click="$router.push('/tests')" />
     </div>
 
   </Container>
@@ -104,6 +114,8 @@ export default {
       testData: null,
       testFinished: false,
       userData: null,
+      timeIsUp: false,
+      secondsLeft: 0,
     }
   },
 
@@ -113,12 +125,16 @@ export default {
     this.getMyself();
 
     api.get("questions/group/"+this.testID).then(
-        res => this.testData = res.data,
+        res => {
+          this.testData = res.data;
+          this.startTimer();
+        },
         error => {
           let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
           this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
         }
     )
+
   },
 
   computed: {
@@ -127,6 +143,31 @@ export default {
     },
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
+    },
+
+    secondsLeftString() {
+      if (this.secondsLeft === null) return "__:__"
+
+      let minutes = Math.floor(this.secondsLeft / 60)
+      let seconds = this.secondsLeft % 60
+
+      let minStr = String(minutes)
+      let secStr = String(seconds)
+      if (minutes < 10) {
+        minStr = "0" + minStr
+      }
+      if (seconds < 10) {
+        secStr = "0" + secStr
+      }
+      return minStr + ":" + secStr
+    },
+
+    timerClasses() {
+      let classes = ["m-0", "mr-3", "p-2", "border-round"]
+      if (this.secondsLeft <= 60) {
+        classes.push("bg-red-500", "text-white")
+      }
+      return classes
     },
 
     isAllQuestionsHasAnswer() {
@@ -176,6 +217,9 @@ export default {
     },
 
     submitTest() {
+      if (this.timeIsUp) {
+        this.$toast.add({ severity: 'warn', summary: 'Упс', detail: "Время теста вышло!", life: 3000 });
+      }
       api.post("questions/validate", this.testData).then(
           res => {
             this.testData = res.data;
@@ -200,6 +244,22 @@ export default {
         if (!this.answerCorrect(answer)) return false;
       }
       return true
+    },
+
+    startTimer() {
+      if (this.testData.completion_time_minutes > 0) {
+        this.secondsLeft = this.testData.completion_time_minutes * 60
+        setTimeout(this.timer, 1000)
+      }
+    },
+
+    timer() {
+      if (this.secondsLeft > 0) {
+        this.secondsLeft--
+        setTimeout(this.timer, 1000)
+      } else {
+        this.timeIsUp = true;
+      }
     },
 
   }

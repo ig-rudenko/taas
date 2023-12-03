@@ -11,6 +11,7 @@
 <script>
 import Menubar from "primevue/menubar";
 import api from "@/services/api.js";
+import themeSwitch from "@/theming.js";
 
 export default {
   name: "Home",
@@ -68,6 +69,14 @@ export default {
         });
       }
 
+      data.push(
+          {
+            label: "",
+            icon: () => themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun",
+            command: () => this.toggleTheme()
+          }
+      )
+
       return data
     }
   },
@@ -82,6 +91,12 @@ export default {
           }
       )
     },
+
+    toggleTheme() {
+      this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", (e) => {})
+      themeSwitch.newTheme(themeSwitch.other)
+    },
+
     logout() {  // #
       this.$store.dispatch("auth/logout").then(
           () => {

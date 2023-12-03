@@ -2,7 +2,7 @@
   <Menu/>
   <Toast/>
 
-  <div class="flex justify-content-center">
+  <Container>
     <div class="login border-round border-1 border-200 p-4 mt-5">
       <h2 class="flex justify-content-center">Пожалуйста, войдите</h2>
       <div>
@@ -22,7 +22,7 @@
         <div class="cursor-pointer m-2" @click="$router.push('/register')">Нет аккаунта</div>
       </div>
     </div>
-  </div>
+  </Container>
 
   <Footer/>
 
@@ -37,9 +37,11 @@ import Toast from 'primevue/toast';
 
 import Menu from "@/components/Menu.vue";
 import Footer from "@/components/Footer.vue";
+import Container from "@/components/Container.vue";
 
 export default {
   components: {
+    Container,
     Footer,
     Button,
     Menu,
