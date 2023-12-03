@@ -45,6 +45,8 @@ async def list_question_groups_view():
 async def create_question_group_view(
     question: CreateQuestionGroup, user: User = Depends(get_current_user)
 ):
+    if not user.can_create_tests:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="У вас нет прав создавать новые тесты.")
     return await create_question_group(question, user.id)
 
 

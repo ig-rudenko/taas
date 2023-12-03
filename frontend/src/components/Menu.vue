@@ -2,10 +2,7 @@
   <div class="card">
     <Menubar :model="menuItems">
       <template #start>
-        TaaS
-      </template>
-      <template #end>
-
+        <div class="mx-3">TaaS</div>
       </template>
     </Menubar>
   </div>

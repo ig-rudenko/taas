@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 .main-container {
-  width: 50%;
+  width: 60%;
   margin-bottom: 2rem;
 }
 
