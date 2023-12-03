@@ -14,14 +14,14 @@ router = APIRouter(prefix="/user", tags=["users"])
 
 
 @router.get("/myself", response_model=SelfUser)
-async def get_user_view(user: User = Depends(get_current_user)):
+async def get_myself_user_view(user: User = Depends(get_current_user)):
     """Данные пользователя, который авторизован"""
     return user.model_dump(by_alias=True)
 
 
 @router.patch("/myself", response_model=SelfUser)
 @handle_mongo_exceptions
-async def update_user_view(updated_user: UpdateUser, user: User = Depends(get_current_user)):
+async def update_myself_user_view(updated_user: UpdateUser, user: User = Depends(get_current_user)):
     """Обновить данные пользователя, который авторизован"""
     await update_user(user_id=user.id, new_data=updated_user)
     return user.model_dump(by_alias=True)

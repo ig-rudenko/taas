@@ -18,7 +18,9 @@ async def get_user(**kwargs) -> User:
 
 async def create_user(user: CreateUser) -> User:
     user.password = encrypt_password(user.password)
-    result = await mongodb.users_collection.insert_one(user.model_dump())
+    user_data = user.model_dump()
+    user_data.update({"is_superuser": False, "can_create_tests": False})
+    result = await mongodb.users_collection.insert_one(user_data)
     return await get_user(_id=result.inserted_id)
 
 

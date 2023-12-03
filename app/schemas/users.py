@@ -43,6 +43,8 @@ class CreateUser(UpdateUser):
 
 class User(CreateUser):
     id: str = Field(..., alias="_id")
+    is_superuser: bool
+    can_create_tests: bool
 
 
 class UserCredentials(BaseModel):
@@ -61,3 +63,5 @@ class MinimalUser(BaseModel):
 class SelfUser(MinimalUser):
     id: str = Field(..., alias="_id")
     email: EmailStr
+    is_superuser: bool
+    can_create_tests: bool
