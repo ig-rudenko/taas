@@ -14,8 +14,8 @@
     </div>
 
     <div>
-      <h2 v-if="secondsLeft !== 0" :class="timerClasses">{{secondsLeftString}}</h2>
-      <h2 v-if="timeIsUp" class="m-0 mr-3 bg-red-500 p-2 text-white border-round">Время вышло!</h2>
+      <h2 v-if="secondsLeft !== 0 && !testFinished" :class="timerClasses">{{secondsLeftString}}</h2>
+      <h2 v-if="timeIsUp && !testFinished" class="m-0 mr-3 bg-red-500 p-2 text-white border-round">Время вышло!</h2>
     </div>
 
   </div>
@@ -241,7 +241,8 @@ export default {
 
     questionCorrect(question) {
       for (const answer of question.answers) {
-        if (!this.answerCorrect(answer)) return false;
+        if (!this.testFinished && !this.answerCorrect(answer)) return false;
+        if (this.testFinished && answer.true_valid !== answer.is_valid) return false;
       }
       return true
     },
@@ -254,6 +255,8 @@ export default {
     },
 
     timer() {
+      if (this.testFinished) return;
+
       if (this.secondsLeft > 0) {
         this.secondsLeft--
         setTimeout(this.timer, 1000)
