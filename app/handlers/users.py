@@ -1,16 +1,33 @@
 from bson import ObjectId
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from starlette import status
 
 from ..decorators import handle_mongo_exceptions
 from ..mongo.passed_questions_crud import get_user_passed_question_list
-from ..mongo.users_crud import get_user, update_user
+from ..mongo.users_crud import (
+    get_user,
+    update_user,
+    get_all_raw_users,
+    change_user_password,
+)
 from ..mongo.questions_crud import get_all_question_groups
-from ..schemas.users import MinimalUser, User, SelfUser, UpdateUser
+from ..schemas.users import MinimalUser, User, SelfUser, UpdateUser, Password
 from ..schemas.passed_questions import PassedQuestionsDetail
 from ..schemas.questions import MinimalQuestionGroup
 from ..services.auth import get_current_user
 
-router = APIRouter(prefix="/user", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
+
+
+@router.get("/", response_model=list[MinimalUser])
+async def get_myself_user_view(user: User = Depends(get_current_user)):
+    """Список всех пользователей"""
+    if user.is_superuser:
+        return await get_all_raw_users()
+    else:
+        raise HTTPException(
+            status_code=403, detail="У вас нет прав для просмотра списка пользователей"
+        )
 
 
 @router.get("/myself", response_model=SelfUser)
@@ -21,17 +38,29 @@ async def get_myself_user_view(user: User = Depends(get_current_user)):
 
 @router.patch("/myself", response_model=SelfUser)
 @handle_mongo_exceptions
-async def update_myself_user_view(updated_user: UpdateUser, user: User = Depends(get_current_user)):
+async def update_myself_user_view(
+    updated_user: UpdateUser, user: User = Depends(get_current_user)
+):
     """Обновить данные пользователя, который авторизован"""
     await update_user(user_id=user.id, new_data=updated_user)
     return user.model_dump(by_alias=True)
 
 
-@router.get("/{user_id}", response_model=MinimalUser)
+@router.patch("/myself/password", status_code=status.HTTP_200_OK)
 @handle_mongo_exceptions
-async def get_user_view(user_id: str):
+async def update_myself_password_view(
+    passwd: Password, user: User = Depends(get_current_user)
+):
+    """Обновить данные пользователя, который авторизован"""
+    await change_user_password(user_id=user.id, new_password=passwd.password)
+
+
+@router.get("/{username}", response_model=MinimalUser)
+@handle_mongo_exceptions
+async def get_user_view(username: str):
     """Данные пользователя"""
-    return await get_user(_id=user_id)
+    user = await get_user(username=username)
+    return user.model_dump(by_alias=True)
 
 
 @router.get("/{user_id}/questions", response_model=list[MinimalQuestionGroup])

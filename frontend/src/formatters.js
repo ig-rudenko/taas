@@ -6,10 +6,7 @@ import "prismjs/components/prism-go.min.js"
 
 
 function format_to_html(string) {
-    // let space_re = new RegExp(' ', 'g');
     let n_re = new RegExp('\n', 'g');
-
-    // string = string.replace(space_re, '&nbsp;').replace(n_re, '<br>')
     return string.replace(n_re, "<br>")
 }
 

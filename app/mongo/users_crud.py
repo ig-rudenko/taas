@@ -5,6 +5,14 @@ from ..schemas.users import User, CreateUser, UpdateUser
 from ..services.encrypt import encrypt_password
 
 
+async def get_all_raw_users() -> list:
+    users = []
+    async for user in mongodb.users_collection.find():
+        user['_id'] = str(user['_id'])
+        users.append(user)
+    return users
+
+
 async def get_user(**kwargs) -> User:
     if kwargs.get("_id") is not None:
         kwargs["_id"] = ObjectId(kwargs["_id"])
@@ -28,6 +36,15 @@ async def update_user(user_id: str, new_data: UpdateUser) -> None:
     result = await mongodb.users_collection.update_one(
         filter={"_id": ObjectId(user_id)},
         update={"$set": new_data.model_dump()},
+    )
+    if result.matched_count == 0:
+        raise DoesNotExistError("User does not exist")
+
+
+async def change_user_password(user_id: str, new_password: str) -> None:
+    result = await mongodb.users_collection.update_one(
+        filter={"_id": ObjectId(user_id)},
+        update={"$set": {"password": encrypt_password(new_password)}},
     )
     if result.matched_count == 0:
         raise DoesNotExistError("User does not exist")

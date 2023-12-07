@@ -50,6 +50,15 @@ export default {
             command: () => this.$router.push('/create')
           })
         }
+
+        if (this.user && this.user.is_superuser) {
+          data.push({
+            label: 'Пользователи',
+            icon: 'pi pi-user',
+            command: () => this.$router.push('/users')
+          })
+        }
+
         data.push({
           label: 'Аккаунт',
           icon: 'pi pi-user',

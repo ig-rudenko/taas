@@ -47,7 +47,7 @@ export default {
 
   methods: {
     getMyself() {
-      api.get("user/myself").then(
+      api.get("users/myself").then(
           res => this.userData = res.data,
           error => {
             let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();

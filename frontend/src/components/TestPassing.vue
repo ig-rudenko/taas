@@ -209,13 +209,7 @@ export default {
     },
 
     getMyself() {
-      api.get("user/myself").then(
-          res => this.userData = res.data,
-          error => {
-            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
-      )
+      api.get("users/myself").then(res => this.userData = res.data, error => this.handleError(error))
     },
 
     submitTest() {
@@ -227,11 +221,13 @@ export default {
             this.testData = res.data;
             this.testFinished = true;
           },
-          error => {
-            let message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
+          error => this.handleError(error)
       )
+    },
+
+    handleError(error) {
+      let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
+      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },
 
     isQuestionHasAnswer(question) {
@@ -271,7 +267,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .question-number {
   top: -20px;
   right: -20px;
@@ -282,10 +278,9 @@ export default {
     right: -1px;
   }
 }
-pre {
-  overflow-x: auto;
-  padding: 1em;
-}
+</style>
+
+<style>
 .token.operator,
 .token.entity,
 .token.url,

@@ -118,7 +118,7 @@ export default {
       return this.selectedTags.length === 0 || this.selectedTags.every(tag => {return test.tags.includes(tag)})
     },
     getMyself() {
-      api.get("user/myself").then(
+      api.get("users/myself").then(
           res => this.userData = res.data,
           error => {
             let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();

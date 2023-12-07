@@ -66,7 +66,7 @@ export default {
   },
 
   mounted() {
-    api.get("user/"+this.userID+"/passed-questions").then(
+    api.get("users/"+this.userID+"/passed-questions").then(
         value => this.data = value.data,
         error => {
           let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();

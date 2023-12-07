@@ -9,9 +9,24 @@ class UpdateUser(BaseModel):
     last_name: str = Field(default="", max_length=100)
 
 
-class CreateUser(UpdateUser):
-    username: str = Field(..., max_length=100)
+class Password(BaseModel):
     password: str = Field(..., max_length=100)
+
+    @field_validator("password")
+    def password_length(cls, v):
+        """
+        Проверка, что пароль имеет длину не менее 8 символов.
+        """
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
+
+class CreateUser(Password):
+    username: str = Field(..., max_length=100)
+    surname: str = Field(default="", max_length=100)
+    first_name: str = Field(default="", max_length=100)
+    last_name: str = Field(default="", max_length=100)
     email: EmailStr
     registration_date: datetime = Field(default_factory=datetime.now)
 
@@ -22,15 +37,6 @@ class CreateUser(UpdateUser):
         """
         if not v.isalnum():
             raise ValueError("Must be alphanumeric")
-        return v
-
-    @field_validator("password")
-    def password_length(cls, v):
-        """
-        Проверка, что пароль имеет длину не менее 8 символов.
-        """
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
         return v
 
     @field_validator("registration_date")
@@ -53,6 +59,7 @@ class UserCredentials(BaseModel):
 
 
 class MinimalUser(BaseModel):
+    id: str = Field(..., alias="_id")
     username: str
     surname: str
     first_name: str
@@ -61,7 +68,6 @@ class MinimalUser(BaseModel):
 
 
 class SelfUser(MinimalUser):
-    id: str = Field(..., alias="_id")
     email: EmailStr
     is_superuser: bool
     can_create_tests: bool

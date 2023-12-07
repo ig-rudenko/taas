@@ -25,7 +25,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user: CreateUser):
     """Регистрация нового пользователя"""
     try:
-        return await create_user(user)
+        user = await create_user(user)
+        return user.model_dump(by_alias=True)
     except DuplicateKeyError as exc:
         keys = list(exc.details["keyValue"].keys())
         raise HTTPException(

@@ -84,12 +84,8 @@ export default {
       if (!this.validate()) return;
 
       this.$store.dispatch("auth/login", this.user).then(
-          () => {
-            this.$router.push("/");
-          },
-          error => {
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Неверный логин или пароль', life: 3000 });
-          }
+          () => this.$router.push("/"),
+          () => this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Неверный логин или пароль', life: 3000 })
       );
     },
 
@@ -100,7 +96,7 @@ export default {
 <style>
 
 .login {
-  width: 530px;
+  max-width: 530px;
   margin: auto;
 }
 
