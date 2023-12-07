@@ -36,19 +36,19 @@
                :severity="questionCorrect(question)?'':'danger'" />
 
 
-        <div class="my-2 md:font-normal">{{question.text}}</div>
+        <div class="my-2 md:font-normal" v-html="formatText(question.text)"></div>
 
         <div v-for="(answer, aID) in question.answers" :key="'q'+qID+'a'+aID">
           <div :class="answerClasses(answer)">
-            <Checkbox class="mr-3" :disabled="testFinished" :inputId="'q'+qID+'a'+aID" v-model="answer.is_valid" :binary="true"/>
-            <label :for="'q'+qID+'a'+aID" class="cursor-pointer">{{formatText(answer.text)}}</label>
+            <Checkbox class="mr-3" :disabled="testFinished" v-model="answer.is_valid" :binary="true"/>
+            <div class="cursor-pointer" @click="answer.is_valid=!answer.is_valid" v-html="formatText(answer.text)"></div>
           </div>
         </div>
 
         <!-- Верный ответ -->
-        <div v-if="question.explanation && isTestPassed" class="mt-3 p-3 border-1 border-200 border-round p-message-success p-message">
-          {{ formatText(question.explanation) }}
-        </div>
+        <div v-if="question.explanation && isTestPassed"
+             v-html="formatText(question.explanation)"
+             class="mt-3 p-3 border-1 border-200 border-round p-message-success p-message"></div>
 
       </div>
     </div>
@@ -90,6 +90,7 @@ import Knob from "primevue/knob";
 import ScrollTop from "primevue/scrolltop";
 import Toast from 'primevue/toast';
 
+import {findCodeBlocksAndFormat} from "@/formatters.js"
 import Container from "@/components/Container.vue";
 import Menu from "@/components/Menu.vue";
 import api from "@/services/api.js";
@@ -190,7 +191,8 @@ export default {
 
   methods: {
     formatText(text) {
-      return text
+      if (!text) return ""
+      return findCodeBlocksAndFormat(text)
     },
 
     answerCorrect(answer) {
@@ -200,9 +202,9 @@ export default {
 
     answerClasses(answer) {
       if (this.answerCorrect(answer)) {
-        return ["p-3"]
+        return ["p-3", "flex", "flex-row"]
       } else {
-        return ["p-3", "border-left-3", "border-red-600"]
+        return ["p-3", "flex", "flex-row", "border-left-3", "border-red-600"]
       }
     },
 
@@ -269,7 +271,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .question-number {
   top: -20px;
   right: -20px;
@@ -279,6 +281,17 @@ export default {
   .question-number {
     right: -1px;
   }
+}
+pre {
+  overflow-x: auto;
+  padding: 1em;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  background: none!important;
 }
 
 </style>
