@@ -1,6 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from starlette import status
 
+from ..decorators import handle_mongo_exceptions
+from ..mongo.passed_questions_crud import (
+    create_passed_question,
+)
 from ..mongo.questions_crud import (
     get_all_question_groups,
     get_question_group,
@@ -8,17 +12,6 @@ from ..mongo.questions_crud import (
     update_question_group,
     delete_question_group,
 )
-from ..mongo.passed_questions_crud import (
-    create_passed_question,
-)
-from ..decorators import handle_mongo_exceptions
-from ..schemas.users import User
-from ..services.auth import get_current_user
-from ..services.permissions import (
-    check_permission_to_question_group,
-    check_permission_to_take_question_group,
-)
-from ..services.validate_questions import validate_questions, ValidateException
 from ..schemas.questions import (
     QuestionGroup,
     CreateQuestionGroup,
@@ -28,13 +21,25 @@ from ..schemas.questions import (
     MinimalQuestionGroup,
     ValidateQuestionGroup,
 )
+from ..schemas.users import User
+from ..services.auth import get_current_user
+from ..services.cache import CacheService
+from ..services.permissions import (
+    check_permission_to_question_group,
+    check_permission_to_take_question_group,
+)
+from ..services.validate_questions import validate_questions, ValidateException
 
 router = APIRouter(prefix="/questions", tags=["questions"])
 
 
 @router.get("/groups", response_model=list[MinimalQuestionGroup])
 async def list_question_groups_view():
-    return await get_all_question_groups()
+    result: list[MinimalQuestionGroup] = await CacheService().get("all_question_groups")
+    if result is None:
+        result = await get_all_question_groups()
+        await CacheService().set("all_question_groups", result, expire=120)
+    return result
 
 
 @router.post(
@@ -44,7 +49,10 @@ async def create_question_group_view(
     question: CreateQuestionGroup, user: User = Depends(get_current_user)
 ):
     if not user.can_create_tests:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="У вас нет прав создавать новые тесты.")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="У вас нет прав создавать новые тесты.",
+        )
     return await create_question_group(question, user.id)
 
 

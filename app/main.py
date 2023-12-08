@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from .handlers import questions, auth, users, healthcheck
 from .mongo import mongodb
+from .services.cache import CacheService
 
 app = FastAPI(
     title="Tests as a Service",
@@ -30,6 +31,9 @@ def startup_mongo():
             "MONGODB_URI and MONGODB_DATABASE environment variables are required"
         )
     mongodb.init(mongo_uri, database_name)
+
+    # init cache
+    CacheService()
 
 
 @app.on_event("shutdown")

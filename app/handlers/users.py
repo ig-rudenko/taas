@@ -15,6 +15,7 @@ from ..schemas.users import MinimalUser, User, SelfUser, UpdateUser, Password
 from ..schemas.passed_questions import PassedQuestionsDetail
 from ..schemas.questions import MinimalQuestionGroup
 from ..services.auth import get_current_user
+from ..services.cache import CacheService
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -43,6 +44,7 @@ async def update_myself_user_view(
 ):
     """Обновить данные пользователя, который авторизован"""
     await update_user(user_id=user.id, new_data=updated_user)
+    await CacheService().delete(f"user:{user.id}")
     return user.model_dump(by_alias=True)
 
 
@@ -53,6 +55,7 @@ async def update_myself_password_view(
 ):
     """Обновить данные пользователя, который авторизован"""
     await change_user_password(user_id=user.id, new_password=passwd.password)
+    await CacheService().delete(f"user:{user.id}")
 
 
 @router.get("/{username}", response_model=MinimalUser)

@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from starlette import status
 
+from .cache import CacheService
 from ..mongo.users_crud import get_user
 from ..mongo import DoesNotExistError
 from ..schemas.auth import TokenPair
@@ -55,9 +56,14 @@ def create_jwt_token_pair(user_id: str) -> TokenPair:
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """Получение текущего пользователя"""
     payload = _get_token_payload(token, "access")
+    user_id = payload[USER_IDENTIFIER]
+    cache_key = f"user:{user_id}"
 
     try:
-        user = await get_user(_id=payload[USER_IDENTIFIER])
+        user: User | None = await CacheService().get(cache_key)
+        if user is None:
+            user = await get_user(_id=user_id)
+            await CacheService().set(cache_key, user, expire=120)
     except DoesNotExistError:
         raise CredentialsException
     return user
