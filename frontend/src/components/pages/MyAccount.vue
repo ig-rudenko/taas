@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Account from "@/components/Account.vue";
+import Account from "@/components/pages/Account.vue";
 
 export default {
   name: "MyAccount",

@@ -7,7 +7,7 @@
         <p>Создавайте свои тесты и проходите другие!</p>
       </div>
       <div>
-        <img class="border-round-2xl image" src="../assets/main-img.png"  alt="main-img"/>
+        <img class="border-round-2xl image" src="../../assets/main-img.png" alt="main-img"/>
       </div>
     </div>
 
