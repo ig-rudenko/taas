@@ -15,8 +15,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your_secret_key")
 ALGORITHM = "HS512"
 USER_IDENTIFIER = "user_id"
-ACCESS_TOKEN_EXPIRE_MINUTES = 120
-REFRESH_TOKEN_EXPIRE_HOURS = 24
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 60))
+REFRESH_TOKEN_EXPIRE_HOURS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_HOURS", 24 * 7))
 
 CredentialsException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
