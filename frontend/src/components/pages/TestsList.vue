@@ -19,25 +19,7 @@
 
     <div class="flex flex-column">
       <div v-for="test in filteredTests">
-        <Card class="m-2">
-          <template #title>
-            <div class="flex align-items-center">
-              <span class="mr-3">{{test.name}}</span><Button size="small" @click="$router.push('/test/'+test._id)" link label="Пройти"/>
-            </div>
-          </template>
-          <template #content>
-            <div class="m-0">
-              <div v-if="test.description" class="mb-3">{{test.description}}</div>
-              <div><i class="pi pi-user"/> {{test.username}}</div>
-              <p v-if="test.completion_time_minutes > 0">Время прохождения: <i class="pi pi-stopwatch mr-1"></i>{{test.completion_time_minutes}} минут</p>
-              <p v-else>Время на прохождение теста неограниченно</p>
-              <p v-if="test.timeout_minutes > 0">Время для повторной попытки теста: <i class="pi pi-stopwatch mr-1"></i>{{test.timeout_minutes}} минут</p>
-              <div>
-                <Tag @click="selectedTags.push(tag)" v-for="tag in test.tags" :value="tag" class="mr-2 cursor-pointer"/>
-              </div>
-            </div>
-          </template>
-        </Card>
+        <TestCard @tagClick="tag => selectedTags.push(tag)" :test="test"/>
       </div>
     </div>
   </Container>
@@ -49,30 +31,28 @@
 
 <script>
 import Button from "primevue/button";
-import Card from "primevue/card";
 import Chips from "primevue/chips";
 import InputText from "primevue/inputtext";
 import ScrollTop from "primevue/scrolltop";
-import Tag from "primevue/tag";
 import Toast from 'primevue/toast';
 
 import Menu from "@/components/Menu.vue";
 import Container from "@/components/Container.vue";
 import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
+import TestCard from "@/components/TestCard.vue";
 
 export default {
   name: "TestsList",
   components: {
     Footer,
     Button,
-    Card,
     Chips,
     Container,
     InputText,
     Menu,
     ScrollTop,
-    Tag,
+    TestCard,
     Toast,
   },
 

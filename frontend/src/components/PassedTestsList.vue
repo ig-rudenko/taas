@@ -1,8 +1,23 @@
 <template>
   <Toast/>
 
+  <div class="my-4 flex align-items-end">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="mr-2" viewBox="0 0 16 16">
+      <path d="M12.5 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 3a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm.5 3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 .5-.5m-.5 2.5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z"/>
+      <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zM4 1v14H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm1 0h9a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5z"/>
+    </svg>
+    <h2 @click="showPassedTests = !showPassedTests" class="cursor-pointer mb-0 mt-3">Статистика прохождения тестов</h2>
+    <div @click="showPassedTests = !showPassedTests" class="cursor-pointer">
+      <svg v-if="showPassedTests" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="ml-2" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+      </svg>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="ml-2" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+      </svg>
+    </div>
+  </div>
 
-  <div class="my-3">
+  <div v-if="showPassedTests" class="my-3">
     <div v-for="result in data" class="p-4 border-1 border-200 border-round hover:shadow-2 my-3">
       <div class="flex justify-content-between">
         <div>
@@ -61,7 +76,8 @@ export default {
 
   data() {
     return {
-      data: null
+      data: null,
+      showPassedTests: true,
     }
   },
 

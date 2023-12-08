@@ -3,7 +3,7 @@
   <Toast />
 
   <Container v-if="userData">
-    <CreateUpdateTest :create-mode="true" :user-data="userData" />
+    <CreateUpdateTest :create-mode="false" :test-id="testId" :user-data="userData" />
   </Container>
 
   <Footer/>
@@ -47,6 +47,9 @@ export default {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
     },
+    testId() {
+      return this.$route.params.id
+    }
   },
 
   methods: {

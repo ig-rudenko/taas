@@ -9,6 +9,7 @@ import Home from "@/components/pages/Home.vue";
 import TestsList from "@/components/pages/TestsList.vue";
 import TestPassing from "@/components/pages/TestPassing.vue";
 import CreateTest from "@/components/pages/CreateTest.vue";
+import UpdateTest from "@/components/pages/UpdateTest.vue";
 
 
 const routes = [
@@ -18,6 +19,7 @@ const routes = [
     { path: "/create", component: CreateTest },
     { path: "/tests", component: TestsList },
     { path: "/test/:id", component: TestPassing },
+    { path: "/test/:id/edit", component: UpdateTest },
     { path: "/account", component: MyAccount },
     { path: "/account/:username", component: Account },
     { path: "/users", component: AllAccounts },
