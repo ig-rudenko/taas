@@ -35,21 +35,14 @@ class QuestionResult(FullQuestion):
     answers: list[AnswerResul]
 
 
-class QuestionGroup(BaseModel):
+class QuestionGroupToPass(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
-    user_id: str
-    tags: list[str]
     questions: list[Question]
     description: str
-    timeout_minutes: int = Field(
-        default=0, description="Время для повторного прохождения"
-    )
-    completion_time_minutes: int = Field(
+    completion_time_seconds: int = Field(
         default=0, description="Время для прохождения теста"
     )
-    created_at: datetime
-    updated_at: datetime
 
 
 class UpdateQuestionGroup(BaseModel):
@@ -69,8 +62,21 @@ class CreateQuestionGroup(UpdateQuestionGroup):
     pass
 
 
-class FullQuestionGroup(QuestionGroup):
+class FullQuestionGroup(BaseModel):
+    id: str = Field(..., alias="_id")
+    name: str
+    user_id: str
+    tags: list[str]
     questions: list[FullQuestion]
+    description: str
+    timeout_minutes: int = Field(
+        default=0, description="Время для повторного прохождения"
+    )
+    completion_time_minutes: int = Field(
+        default=0, description="Время для прохождения теста"
+    )
+    created_at: datetime
+    updated_at: datetime
 
 
 class ValidateQuestionGroup(BaseModel):

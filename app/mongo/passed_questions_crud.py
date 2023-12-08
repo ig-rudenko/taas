@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pymongo
 from bson import ObjectId
@@ -47,18 +47,12 @@ async def get_user_passed_question_list(user_id: str) -> list[PassedQuestionsDet
                 "from": "questions",
                 "localField": "question_group_id",
                 "foreignField": "_id",
-                "as": "question_group_data"
+                "as": "question_group_data",
             }
         },
-        {
-            "$unwind": "$question_group_data"
-        },
-        {
-            "$match": {"user_id": ObjectId(user_id)}
-        },
-        {
-            "$sort": {"created_at": pymongo.DESCENDING}
-        },
+        {"$unwind": "$question_group_data"},
+        {"$match": {"user_id": ObjectId(user_id)}},
+        {"$sort": {"created_at": pymongo.DESCENDING}},
         {
             "$project": {
                 "_id": 1,
@@ -67,9 +61,9 @@ async def get_user_passed_question_list(user_id: str) -> list[PassedQuestionsDet
                 "created_at": 1,
                 "total_score": 1,
                 "user_score": 1,
-                "question_group_name": "$question_group_data.name"
+                "question_group_name": "$question_group_data.name",
             }
-        }
+        },
     ]
 
     records = mongodb.passed_questions.aggregate(pipeline)

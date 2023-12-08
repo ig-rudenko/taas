@@ -36,6 +36,7 @@ def singleton(cls):
         if not hasattr(cls, "_instance"):
             cls._instance = cls(*args, **kwargs)
         return cls._instance
+
     return wrapper
 
 
@@ -87,7 +88,7 @@ class CacheService(AbstractCache):
         redis_host = os.environ.get("REDIS_HOST", "localhost")
         redis_port = int(os.environ.get("REDIS_PORT", 6379))
         redis_db = int(os.environ.get("REDIS_DB", 3))
-        if redis_host and redis_port and redis_db:
+        if redis_host and redis_port and redis_db and False:
             self._cache: AbstractCache = RedisCache(redis_host, redis_port, redis_db)
         else:
             self._cache: AbstractCache = InMemoryCache()
@@ -103,13 +104,3 @@ class CacheService(AbstractCache):
 
     async def clear(self) -> None:
         return await self._cache.clear()
-
-
-if __name__ == "__main__":
-
-    c = CacheService()
-    c2 = CacheService()
-
-    print(c is c2)
-
-    print(c._cache is c2._cache)

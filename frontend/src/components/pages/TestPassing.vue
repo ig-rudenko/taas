@@ -130,10 +130,7 @@ export default {
           this.testData = res.data;
           this.startTimer();
         },
-        error => {
-          let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-        }
+        error => this.handleError(error)
     )
 
   },
@@ -227,7 +224,11 @@ export default {
 
     handleError(error) {
       let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+      if (message.includes("Данный тест повторно вы сможете пройти")) {
+        this.$toast.add({ severity: 'info', summary: 'Ожидание', detail: message, life: 3000 });
+      } else {
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+      }
     },
 
     isQuestionHasAnswer(question) {
@@ -246,9 +247,11 @@ export default {
     },
 
     startTimer() {
-      if (this.testData.completion_time_minutes > 0) {
-        this.secondsLeft = this.testData.completion_time_minutes * 60
+      if (this.testData.completion_time_seconds > 0) {
+        this.secondsLeft = this.testData.completion_time_seconds
         setTimeout(this.timer, 1000)
+      } else if (this.testData.completion_time_seconds <= 0) {
+        this.timeIsUp = true;
       }
     },
 

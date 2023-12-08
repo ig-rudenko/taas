@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, HTTPException, Depends
 from starlette import status
 
@@ -13,7 +15,7 @@ from ..mongo.questions_crud import (
     delete_question_group,
 )
 from ..schemas.questions import (
-    QuestionGroup,
+    QuestionGroupToPass,
     CreateQuestionGroup,
     UpdateQuestionGroup,
     QuestionGroupResult,
@@ -27,6 +29,10 @@ from ..services.cache import CacheService
 from ..services.permissions import (
     check_permission_to_question_group,
     check_permission_to_take_question_group,
+)
+from ..services.start_testing_checker import (
+    get_testing_group,
+    validate_question_group_time_not_expired,
 )
 from ..services.validate_questions import validate_questions, ValidateException
 
@@ -56,11 +62,11 @@ async def create_question_group_view(
     return await create_question_group(question, user.id)
 
 
-@router.get("/group/{group_id}", response_model=QuestionGroup)
+@router.get("/group/{group_id}", response_model=QuestionGroupToPass)
 @handle_mongo_exceptions
 async def question_group_view(group_id: str, user: User = Depends(get_current_user)):
     await check_permission_to_question_group(user.id, group_id, "view")
-    return await get_question_group(group_id)
+    return await get_testing_group(user, group_id)
 
 
 @router.get("/group/{group_id}/full-access", response_model=FullQuestionGroup)
@@ -102,6 +108,8 @@ async def validate_question_group_view(
     await check_permission_to_take_question_group(
         user_id=user.id, question_group_id=question_group_data.id
     )
+    await validate_question_group_time_not_expired(user, question_group_data.id)
+
     try:
         validated_question_group = await validate_questions(question_group_data)
     except ValidateException as exc:
