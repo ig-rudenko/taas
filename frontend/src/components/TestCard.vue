@@ -22,10 +22,12 @@
   </Card>
 </template>
 
-<script>
+<script lang="ts">
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Tag from "primevue/tag";
+
+import {TestMin} from "@/types.ts"
 
 export default {
   name: "TestCard",
@@ -35,7 +37,7 @@ export default {
     Tag,
   },
   props: {
-    test: {required: true, type: Object},
+    test: {required: true, type: TestMin},
     editLink: {required: false, type: Boolean, default: false},
     showUser: {required: false, type: Boolean, default: true},
   }

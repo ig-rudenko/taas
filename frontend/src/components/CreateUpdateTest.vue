@@ -37,7 +37,7 @@
       <div class="p-5 my-5 border-round border-1 border-300 hover:shadow-2 p-card">
 
         <Badge size="xlarge" class="absolute question-number" :value="'# ' + (qID + 1)" />
-        <Button @click="deleteQuestion(qID)" class="absolute question-delete" icon="pi pi-times" size="small" severity="danger" rounded raised aria-label="Cancel" />
+        <Button @click="testData.deleteQuestion(qID)" class="absolute question-delete" icon="pi pi-times" size="small" severity="danger" rounded raised aria-label="Cancel" />
 
         <!-- Вопрос -->
         <div class="my-2 md:font-normal">
@@ -56,14 +56,14 @@
               <span v-if="answer.is_valid">Верный</span>
             </div>
             <div>
-              <Button @click="deleteQuestionAnswer(qID, aID)" icon="pi pi-times" size="small" severity="danger" rounded outlined aria-label="Cancel" />
+              <Button @click="question.deleteAnswer(aID)" icon="pi pi-times" size="small" severity="danger" rounded outlined aria-label="Cancel" />
             </div>
           </div>
           <Textarea v-model="answer.text" rows="5"/>
         </div>
 
         <div>
-          <Button label="Добавить вариант ответа" size="small" severity="info" @click="addNewQuestionAnswer(qID)"/>
+          <Button label="Добавить вариант ответа" size="small" severity="info" @click="question.addAnswer()"/>
         </div>
 
         <!-- Объяснение верного ответа -->
@@ -78,7 +78,7 @@
     </div>
 
     <div class="flex justify-content-between">
-      <Button label="Добавить новый вопрос" size="small" severity="info" @click="addNewQuestion"/>
+      <Button label="Добавить новый вопрос" size="small" severity="info" @click="testData.addQuestion()"/>
 
       <Button :label="submitButtonLabel" size="small" @click="submitTest"/>
     </div>
@@ -90,7 +90,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -102,6 +102,7 @@ import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
 
 import api from "@/services/api.js";
+import {FullTest, User, Question, Answer} from "@/types.ts";
 
 export default {
   name: "CreateTest",
@@ -118,37 +119,31 @@ export default {
   },
 
   props: {
-    userData: {required: true, type: Object},
+    userData: {required: true, type: User},
     createMode: {required: true, type: Boolean},
     testId: {required: false, type: String},
   },
 
   data() {
     return {
-      testData: {
-        name: "",
-        description: "",
-        tags: ["easy"],
-        timeout_minutes: 0,
-        completion_time_minutes: 0,
-        questions: [
-          {
-            text: "",
-            answers: [
-              {
-                text: "Ответ 1",
-                is_valid: false
-              },
-              {
-                text: "Верный ответ",
-                is_valid: true
-              }
+      testData: new FullTest(
+        "",
+        "",
+        0,
+        0,
+        ["easy"],
+        [
+          new Question(
+            "",
+            [
+              new Answer("Ответ 1", false),
+              new Answer("Верный ответ", true)
             ],
-            image: "",
-            explanation: ""
-          }
+            "",
+            ""
+          )
         ],
-      },
+      ),
     }
   },
 
@@ -177,44 +172,10 @@ export default {
   methods: {
 
     getTestData() {
-      api.get("questions/group/"+this.testId+"/full-access").then(res => this.testData = res.data, error => this.handleError(error))
-    },
-
-    addNewQuestion() {
-      this.testData.questions.push(
-          {
-            text: "",
-            answers: [
-              {
-                text: "Ответ 1",
-                is_valid: false
-              },
-              {
-                text: "Верный ответ",
-                is_valid: true
-              }
-            ],
-            image: "",
-            explanation: ""
-          }
+      api.get("questions/group/"+this.testId+"/full-access").then(
+          res => this.testData = new FullTest(...res.data),
+          error => this.handleError(error)
       )
-    },
-
-    deleteQuestion(questionID) {
-      this.testData.questions.splice(questionID, 1)
-    },
-
-    addNewQuestionAnswer(questionID) {
-      this.testData.questions[questionID].answers.push(
-          {
-            text: "",
-            is_valid: false
-          },
-      )
-    },
-
-    deleteQuestionAnswer(questionID, answerID) {
-      this.testData.questions[questionID].answers.splice(answerID, 1)
     },
 
     submitTest() {

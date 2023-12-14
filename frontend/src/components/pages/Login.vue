@@ -8,12 +8,12 @@
       <div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Username</label>
-          <InputText id="username" :class="{'p-invalid': !userValid.username}"
+          <InputText id="username" :class="{'p-invalid': !user.valid.username}"
                      v-model="user.username" @keydown.enter="handleLogin"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="password">Password</label>
-          <InputText id="password" type="password" :class="{'p-invalid': !userValid.password}" :input-style="{width: '100%'}"
+          <InputText id="password" type="password" :class="{'p-invalid': !user.valid.password}" :input-style="{width: '100%'}"
                      v-model="user.password" @keydown.enter="handleLogin"/>
         </div>
         <div class="flex justify-content-center">
@@ -28,7 +28,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -38,6 +38,7 @@ import Toast from 'primevue/toast';
 import Menu from "@/components/Menu.vue";
 import Footer from "@/components/Footer.vue";
 import Container from "@/components/Container.vue";
+import {LoginUser} from "@/types";
 
 export default {
   components: {
@@ -52,18 +53,11 @@ export default {
 
   data() {
     return {
-      user: {
-        username: "",
-        password: "",
-      },
-      userValid: {
-        username: true,
-        password: true,
-      }
+      user: new LoginUser(),
     };
   },
   computed: {
-    loggedIn() {
+    loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
   },
@@ -73,15 +67,8 @@ export default {
     }
   },
   methods: {
-
-    validate() {
-      this.userValid.username = this.user.username.length > 0
-      this.userValid.password = this.user.password.length > 0
-      return this.userValid.username && this.userValid.password
-    },
-
     handleLogin() {
-      if (!this.validate()) return;
+      if (!this.user.isValid) return;
 
       this.$store.dispatch("auth/login", this.user).then(
           () => this.$router.push("/"),

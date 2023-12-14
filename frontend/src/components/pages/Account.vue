@@ -39,7 +39,8 @@
 
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import ScrollTop from "primevue/scrolltop";
@@ -54,7 +55,9 @@ import UserDetail from "@/components/UserDetail.vue";
 import ChangePasswordForm from "@/components/ChangePasswordForm.vue";
 import UsersTestsList from "@/components/UsersTestsList.vue";
 
-export default {
+import {User} from "@/types.ts";
+
+export default defineComponent({
   name: "Account",
   components: {
     UsersTestsList,
@@ -72,8 +75,8 @@ export default {
 
   data() {
     return {
-      userData: null,
-      currentUser: null,
+      userData: null as User,
+      currentUser: null as User,
       showPassedTests: true,
       showChangePasswordModal: false,
       newPasswords: {
@@ -91,58 +94,58 @@ export default {
   },
 
   computed: {
-    loggedIn() {
+    loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
-    accountUsername() {
+    accountUsername(): string {
       if (this.$route.params && this.$route.params.username) {
         return this.$route.params.username
       }
       return "myself"
     },
-    isMyAccount() {
+    isMyAccount(): boolean {
       return this.accountUsername === "myself"
     }
   },
 
   methods: {
 
-    getCurrentUser() {
+    getCurrentUser(): void {
       api.get("users/myself").then(
           res => {
-            this.currentUser = res.data
+            this.currentUser = new User(...res.data)
             if (this.isMyAccount) {this.userData = res.data}
           },
           error => this.handleError(error)
       )
     },
 
-    getUserData() {
+    getUserData(): void {
       if (this.isMyAccount) return;
 
       api.get("users/"+this.accountUsername).then(
-          res => this.userData = res.data,
+          res => this.userData = new User(...res.data),
           error => this.handleError(error)
       )
     },
 
-    updateUserData() {
+    updateUserData(): void {
       api.patch("users/myself", this.userData).then(
           () => {this.$toast.add({ severity: 'success', summary: 'Success', detail: "Данные пользователя обновлены", life: 3000 });},
           error => this.handleError(error)
       )
     },
 
-    handleError(error) {
+    handleError(error: any): void {
       let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
       this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },
 
-    passwordHasBeenChanged() {
+    passwordHasBeenChanged(): void {
       this.$toast.add({ severity: 'success', summary: 'Success', detail: "Пароль был обновлен", life: 3000 });
     }
   }
-}
+})
 </script>
 
 <style scoped>

@@ -12,6 +12,7 @@
 import Menubar from "primevue/menubar";
 import api from "@/services/api.js";
 import themeSwitch from "@/theming.js";
+import {User} from "@/types.ts";
 
 export default {
   name: "Home",
@@ -20,7 +21,7 @@ export default {
   },
 
   props: {
-    user: {required: false, type: Object, default: null},
+    user: {required: false, type: User, default: null},
   },
 
   computed: {
@@ -91,16 +92,6 @@ export default {
   },
 
   methods: {
-    getMyself() {
-      api.get("user/myself").then(
-          res => this.userData = res.data,
-          error => {
-            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
-      )
-    },
-
     toggleTheme() {
       this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", (e) => {})
       themeSwitch.newTheme(themeSwitch.other)
@@ -108,9 +99,7 @@ export default {
 
     logout() {  // #
       this.$store.dispatch("auth/logout").then(
-          () => {
-            this.$router.push("/login");
-          },
+          () => this.$router.push("/login"),
       );
     },
   }

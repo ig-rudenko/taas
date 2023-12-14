@@ -8,15 +8,15 @@
       <div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Username</label>
-          <InputText id="username" v-model="user.username" :class="{'p-invalid': !userValid.username}"/>
+          <InputText id="username" v-model="user.username" :class="{'p-invalid': !user.valid.username}"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="password">Email</label>
-          <InputText id="password" v-model="user.email" :class="{'p-invalid': !userValid.email}" type="email"/>
+          <InputText id="password" v-model="user.email" :class="{'p-invalid': !user.valid.email}" type="email"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="password">Password</label>
-          <Password id="password" v-model="user.password" :class="{'p-invalid': !userValid.password}" :input-style="{width: '100%'}"/>
+          <Password id="password" v-model="user.password" :class="{'p-invalid': !user.valid.password}" :input-style="{width: '100%'}"/>
         </div>
         <div class="flex justify-content-center">
           <Button class="m-2" icon="pi pi-user" @click="handleRegister" label="Регистрация" style="width: 100%" />
@@ -30,7 +30,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -38,9 +38,10 @@ import Password from "primevue/password";
 import Toast from 'primevue/toast';
 
 import Menu from "@/components/Menu.vue";
-import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
 import Container from "@/components/Container.vue";
+
+import {RegisterUser} from "@/types";
 
 export default {
   components: {
@@ -55,21 +56,12 @@ export default {
 
   data() {
     return {
-      user: {  // #
-        username: "",
-        email: "",
-        password: "",
-      },
-      userValid: {
-        username: true,
-        email: true,
-        password: true,
-      }
+      user: new RegisterUser(),
     };
   },
 
   computed: {  // #
-    loggedIn() {
+    loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
   },
@@ -80,15 +72,9 @@ export default {
   },
 
   methods: {
-    validate() {
-      this.userValid.username = this.user.username.length > 0
-      this.userValid.email = this.user.email.length > 0 && this.user.email.includes("@")
-      this.userValid.password = this.user.password.length > 0
-      return this.userValid.username && this.userValid.password
-    },
 
-    handleRegister() {
-      if (!this.validate()) return;
+    handleRegister(): void {
+      if (!this.user.isValid) return;
 
       this.$store.dispatch("auth/register", this.user).then(
           () => this.$router.push("/login"),
