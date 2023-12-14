@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field, EmailStr, field_validator
 
 class UpdateUser(BaseModel):
     surname: str = Field(default="", max_length=100)
-    first_name: str = Field(default="", max_length=100)
-    last_name: str = Field(default="", max_length=100)
+    first_name: str = Field(default="", max_length=100, alias="firstName")
+    last_name: str = Field(default="", max_length=100, alias="lastName")
 
 
 class Password(BaseModel):
@@ -25,10 +25,12 @@ class Password(BaseModel):
 class CreateUser(Password):
     username: str = Field(..., max_length=100)
     surname: str = Field(default="", max_length=100)
-    first_name: str = Field(default="", max_length=100)
-    last_name: str = Field(default="", max_length=100)
+    first_name: str = Field(default="", max_length=100, alias="firstName")
+    last_name: str = Field(default="", max_length=100, alias="lastName")
     email: EmailStr
-    registration_date: datetime = Field(default_factory=datetime.now)
+    registration_date: datetime = Field(
+        default_factory=datetime.now, alias="registrationDate"
+    )
 
     @field_validator("username")
     def username_alphanumeric(cls, v):
@@ -49,8 +51,8 @@ class CreateUser(Password):
 
 class User(CreateUser):
     id: str = Field(..., alias="_id")
-    is_superuser: bool
-    can_create_tests: bool
+    is_superuser: bool = Field(..., alias="isSuperuser")
+    can_create_tests: bool = Field(..., alias="canCreateTests")
 
 
 class UserCredentials(BaseModel):
@@ -62,12 +64,12 @@ class MinimalUser(BaseModel):
     id: str = Field(..., alias="_id")
     username: str
     surname: str
-    first_name: str
-    last_name: str
-    registration_date: datetime
+    first_name: str = Field(..., alias="firstName")
+    last_name: str = Field(..., alias="lastName")
+    registration_date: datetime = Field(..., alias="registrationDate")
 
 
 class SelfUser(MinimalUser):
     email: EmailStr
-    is_superuser: bool
-    can_create_tests: bool
+    is_superuser: bool = Field(..., alias="isSuperuser")
+    can_create_tests: bool = Field(..., alias="canCreateTests")

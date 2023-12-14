@@ -18,27 +18,27 @@
   </div>
 
   <div v-if="showPassedTests" class="my-3">
-    <div v-for="result in data" class="p-4 border-1 border-200 border-round hover:shadow-2 my-3">
+    <div v-for="passQuest in data" class="p-4 border-1 border-200 border-round hover:shadow-2 my-3">
       <div class="flex justify-content-between">
         <div>
-          <h3>{{result.question_group_name}}</h3>
+          <h3>{{passQuest.questionGroupName}}</h3>
           <div class="flex flex-wrap align-items-center">
-            <div class="mr-3">Пройдено {{result.user_score}} из {{result.total_score}}</div>
+            <div class="mr-3">Пройдено {{passQuest.userScore}} из {{passQuest.totalScore}}</div>
             <div class="flex align-items-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="mr-2" viewBox="0 0 16 16">
                 <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
               </svg>
-              {{formatDate(result.created_at)}}
+              {{passQuest.dateString}}
             </div>
           </div>
           <div class="mt-4">
-            <ProgressBar :value="userPercents(result)" ></ProgressBar>
+            <ProgressBar :value="passQuest.percents" ></ProgressBar>
           </div>
         </div>
 
         <div>
-          <svg v-if="testPassedSuccessfully(result)" xmlns="http://www.w3.org/2000/svg" width="86" height="86" :fill="'#74c769'" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+          <svg v-if="passQuest.passedSuccessfully" xmlns="http://www.w3.org/2000/svg" width="86" height="86" :fill="'#74c769'" class="bi bi-emoji-smile" viewBox="0 0 16 16">
             <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/>
           </svg>
           <svg v-else xmlns="http://www.w3.org/2000/svg" width="86" height="86" :fill="'#ea6767'" class="bi bi-emoji-smile" viewBox="0 0 16 16">
@@ -57,11 +57,12 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import ProgressBar from "primevue/progressbar";
 import Toast from 'primevue/toast';
 
 import api from "@/services/api.js";
+import {PassedQuestion} from "@/questions";
 
 export default {
   name: "PassedTestsList",
@@ -76,14 +77,14 @@ export default {
 
   data() {
     return {
-      data: null,
+      data: null as Array<PassedQuestion>,
       showPassedTests: true,
     }
   },
 
   mounted() {
     api.get("users/"+this.userID+"/passed-questions").then(
-        value => this.data = value.data,
+        value => this.data = this.getPassedQuestionsList(value.data),
         error => {
           let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
           this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
@@ -92,17 +93,23 @@ export default {
   },
 
   methods: {
-    testPassedSuccessfully(test) {
-      return test.user_score / test.total_score > 0.7
-    },
-    formatDate(date) {
-      let d = new Date(date)
-      return new Intl.DateTimeFormat("ru", {day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "numeric"}).format(d)
-    },
-    userPercents(test) {
-      return Math.floor((test.user_score / test.total_score) * 100)
-    },
-  },
+    getPassedQuestionsList(data: Array<any>): Array<PassedQuestion> {
+      let res: Array<PassedQuestion> = []
+      for (const passQuest of data) {
+        res.push(
+            new PassedQuestion(
+                passQuest.createdAt,
+                passQuest.questionGroupId,
+                passQuest.questionGroupName,
+                passQuest.totalScore,
+                passQuest.userId,
+                passQuest.userScore
+            )
+        )
+      }
+      return res
+    }
+  }
 
 }
 </script>

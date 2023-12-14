@@ -18,10 +18,10 @@ async def get_last_passed_question(
     """
     record = await mongodb.passed_questions.find_one(
         {
-            "user_id": ObjectId(user_id),
-            "question_group_id": ObjectId(question_group_id),
+            "userId": ObjectId(user_id),
+            "questionGroupId": ObjectId(question_group_id),
         },
-        sort=[("created_at", pymongo.DESCENDING)],
+        sort=[("createdAt", pymongo.DESCENDING)],
     )
     if record is None:
         raise DoesNotExistError
@@ -45,23 +45,23 @@ async def get_user_passed_question_list(user_id: str) -> list[PassedQuestionsDet
         {
             "$lookup": {
                 "from": "questions",
-                "localField": "question_group_id",
+                "localField": "questionGroupId",
                 "foreignField": "_id",
-                "as": "question_group_data",
+                "as": "questionGroupData",
             }
         },
-        {"$unwind": "$question_group_data"},
-        {"$match": {"user_id": ObjectId(user_id)}},
-        {"$sort": {"created_at": pymongo.DESCENDING}},
+        {"$unwind": "$questionGroupData"},
+        {"$match": {"userId": ObjectId(user_id)}},
+        {"$sort": {"createdAt": pymongo.DESCENDING}},
         {
             "$project": {
                 "_id": 1,
-                "question_group_id": 1,
-                "user_id": 1,
-                "created_at": 1,
-                "total_score": 1,
-                "user_score": 1,
-                "question_group_name": "$question_group_data.name",
+                "questionGroupId": 1,
+                "userId": 1,
+                "createdAt": 1,
+                "totalScore": 1,
+                "userScore": 1,
+                "questionGroupName": "$questionGroupData.name",
             }
         },
     ]
@@ -81,11 +81,11 @@ async def create_passed_question(
     :return: Запись результата прохождения.
     """
     data = {
-        "user_id": ObjectId(user_id),
-        "question_group_id": ObjectId(question_group.id),
-        "created_at": datetime.now(),
-        "total_score": question_group.total_score,
-        "user_score": question_group.user_score,
+        "userId": ObjectId(user_id),
+        "questionGroupId": ObjectId(question_group.id),
+        "createdAt": datetime.now(),
+        "totalScore": question_group.total_score,
+        "userScore": question_group.user_score,
     }
     result = await mongodb.passed_questions.insert_one(data)
     return await get_passed_question(result.inserted_id)
@@ -93,6 +93,6 @@ async def create_passed_question(
 
 def _format_passed_question(record):
     record["_id"] = str(record["_id"])
-    record["user_id"] = str(record["user_id"])
-    record["question_group_id"] = str(record["question_group_id"])
+    record["userId"] = str(record["userId"])
+    record["questionGroupId"] = str(record["questionGroupId"])
     return record

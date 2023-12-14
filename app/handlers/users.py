@@ -70,7 +70,7 @@ async def get_user_view(username: str):
 @handle_mongo_exceptions
 async def get_user_questions_view(user_id: str):
     """Тесты, которые создал пользователь"""
-    return await get_all_question_groups(filter_={"user_id": ObjectId(user_id)})
+    return await get_all_question_groups(filter_={"userId": ObjectId(user_id)})
 
 
 @router.get("/{user_id}/passed-questions", response_model=list[PassedQuestionsDetail])

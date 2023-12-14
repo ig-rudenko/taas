@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="userData"/>
+  <Menu :user="user"/>
   <Toast/>
 
   <Container>
@@ -7,12 +7,12 @@
       <div class="p-input-icon-left p-float-label m-2 search-input">
         <i class="pi pi-search" />
         <InputText v-model="search" style="width: 100%"/>
-        <label for="chips">Поиск теста</label>
+        <label>Поиск теста</label>
       </div>
       <div class="card p-fluid m-2 search-input">
         <div class="p-float-label">
-          <Chips id="chips" v-model="selectedTags" style="width: 100%"/>
-          <label for="chips">Укажите теги</label>
+          <Chips v-model="selectedTags" style="width: 100%"/>
+          <label>Укажите теги</label>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import Button from "primevue/button";
 import Chips from "primevue/chips";
 import InputText from "primevue/inputtext";
@@ -41,6 +41,8 @@ import Container from "@/components/Container.vue";
 import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
 import TestCard from "@/components/TestCard.vue";
+import {createNewTestAboutList, TestAbout} from "@/questions";
+import {createNewUser, User} from "@/user";
 
 export default {
   name: "TestsList",
@@ -58,10 +60,10 @@ export default {
 
   data() {
     return {
-      allTests: [],
+      allTests: null as Array<TestAbout>,
       search: "",
-      selectedTags: [],
-      userData: null,
+      selectedTags: [] as Array<string>,
+      user: null as User,
     }
   },
 
@@ -70,9 +72,10 @@ export default {
       return this.$store.state.auth.status.loggedIn;
     },
     filteredTests() {
+      if (!this.allTests) return [];
       return this.allTests.filter(
-          elem => {
-            return this.filterByTestName(elem) && this.filterByTags(elem)
+          test => {
+            return this.filterByTestName(test) && this.filterByTags(test)
           }
       )
     }
@@ -83,7 +86,7 @@ export default {
 
     api.get("questions/groups").then(
         res => {
-          this.allTests = res.data
+          this.allTests = createNewTestAboutList(res.data)
         },
         error => {
           let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
@@ -93,13 +96,15 @@ export default {
   },
 
   methods: {
-    filterByTestName(test) { return this.search.length === 0 || test.name.includes(this.search) },
-    filterByTags(test) {
-      return this.selectedTags.length === 0 || this.selectedTags.every(tag => {return test.tags.includes(tag)})
+    filterByTestName(test: TestAbout): boolean {
+      return this.search.length === 0 || test.name.includes(this.search)
     },
-    getMyself() {
+    filterByTags(test: TestAbout): boolean {
+      return this.selectedTags.length === 0 || this.selectedTags.every(tag => {return test.tags.indexOf(tag) >= 0})
+    },
+    getMyself(): void {
       api.get("users/myself").then(
-          res => this.userData = res.data,
+          res => this.user = createNewUser(res.data),
           error => {
             let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
             this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });

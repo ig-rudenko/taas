@@ -38,7 +38,7 @@ import Toast from 'primevue/toast';
 import Menu from "@/components/Menu.vue";
 import Footer from "@/components/Footer.vue";
 import Container from "@/components/Container.vue";
-import {LoginUser} from "@/types";
+import {LoginUser} from "@/user";
 
 export default {
   components: {

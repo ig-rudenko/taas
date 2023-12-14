@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="userData"/>
+  <Menu :user="user"/>
   <Toast/>
 
   <div v-if="testData" class="sticky top-0 p-3 p-card border-bottom-1 border-200 flex justify-content-between align-items-center" style="z-index: 999">
@@ -40,13 +40,13 @@
 
         <div v-for="(answer, aID) in question.answers" :key="'q'+qID+'a'+aID">
           <div :class="answerClasses(answer)">
-            <Checkbox class="mr-3" :disabled="testFinished" v-model="answer.is_valid" :binary="true"/>
-            <div class="cursor-pointer" @click="answer.is_valid=!answer.is_valid" v-html="formatText(answer.text)"></div>
+            <Checkbox class="mr-3" :disabled="testFinished" v-model="answer.isValid" :binary="true"/>
+            <div class="cursor-pointer" @click="testFinished?null:answer.isValid=!answer.isValid" v-html="formatText(answer.text)"></div>
           </div>
         </div>
 
         <!-- Верный ответ -->
-        <div v-if="question.explanation && isTestPassed"
+        <div v-if="question.explanation && testData.passedSuccessfully"
              v-html="formatText(question.explanation)"
              class="mt-3 p-3 border-1 border-200 border-round p-message-success p-message"></div>
 
@@ -54,7 +54,7 @@
     </div>
 
     <div v-if="testFinished">
-      <div v-if="isTestPassed" class="text-center m-4">
+      <div v-if="testData.passedSuccessfully" class="text-center m-4">
         <i class="pi pi-star-fill mx-2 text-orange-400"/>
         Поздравляем
         <i class="pi pi-star-fill mx-2 text-orange-400"/>
@@ -62,11 +62,11 @@
       </div>
       <div v-else class="text-center m-4">
         😞 Сожалеем 😞
-        <div>Для прохождения теста необходимо набрать более 70% верных ответов, а у вас {{userPercents}}%</div>
+        <div>Для прохождения теста необходимо набрать более 70% верных ответов, а у вас {{testData.percents}}%</div>
         <div>Не отчаивайтесь! Вы сможете пройти тест позднее 😊</div>
       </div>
       <div class="flex justify-content-center">
-        <Knob v-model="testData.user_score" :value-color="isTestPassed?'teal':'#ff6767'" readonly :max="testData.total_score" :size="200"/>
+        <Knob v-model="testData.userScore" :value-color="testData.passedSuccessfully?'teal':'#ff6767'" readonly :max="testData.totalScore" :size="200"/>
       </div>
     </div>
 
@@ -82,7 +82,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -95,6 +95,8 @@ import Container from "@/components/Container.vue";
 import Menu from "@/components/Menu.vue";
 import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
+import {Answer, createNewTestForPassing, Question, TestForPassing} from "@/questions";
+import {createNewUser, User} from "@/user";
 
 export default {
   name: "TestPassing",
@@ -112,9 +114,9 @@ export default {
 
   data() {
     return {
-      testData: null,
+      testData: null as TestForPassing,
       testFinished: false,
-      userData: null,
+      user: null as User,
       timeIsUp: false,
       secondsLeft: 0,
     }
@@ -127,7 +129,7 @@ export default {
 
     api.get("questions/group/"+this.testID).then(
         res => {
-          this.testData = res.data;
+          this.testData = createNewTestForPassing(res.data);
           this.startTimer();
         },
         error => this.handleError(error)
@@ -136,14 +138,14 @@ export default {
   },
 
   computed: {
-    testID() {
+    testID(): string {
       return this.$route.params.id
     },
-    loggedIn() {
+    loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
 
-    secondsLeftString() {
+    secondsLeftString(): string {
       if (this.secondsLeft === null) return "__:__"
 
       let minutes = Math.floor(this.secondsLeft / 60)
@@ -160,7 +162,7 @@ export default {
       return minStr + ":" + secStr
     },
 
-    timerClasses() {
+    timerClasses(): Array<string> {
       let classes = ["m-0", "mr-3", "p-2", "border-round"]
       if (this.secondsLeft <= 60) {
         classes.push("bg-red-500", "text-white")
@@ -168,61 +170,47 @@ export default {
       return classes
     },
 
-    isAllQuestionsHasAnswer() {
+    isAllQuestionsHasAnswer(): boolean {
       for (const question of this.testData.questions) {
         if (!this.isQuestionHasAnswer(question)) return false;
       }
       return true
     },
 
-    isTestPassed() {
-      if (!this.testData.user_score || !this.testData.total_score) return false;
-      return this.testData.user_score / this.testData.total_score > 0.7;
-    },
-
-    userPercents() {
-      if (!this.testData.user_score || !this.testData.total_score) return 0;
-      return Math.floor((this.testData.user_score / this.testData.total_score) * 100)
-    },
   },
 
   methods: {
-    formatText(text) {
+    formatText(text): string {
       if (!text) return ""
       return findCodeBlocksAndFormat(text)
     },
 
-    answerCorrect(answer) {
-      if (answer.true_valid === undefined) return true
-      return !answer.is_valid || answer.true_valid === answer.is_valid
-    },
-
-    answerClasses(answer) {
-      if (this.answerCorrect(answer)) {
+    answerClasses(answer: Answer): Array<string> {
+      if (answer.isCorrect) {
         return ["p-3", "flex", "flex-row"]
       } else {
         return ["p-3", "flex", "flex-row", "border-left-3", "border-red-600"]
       }
     },
 
-    getMyself() {
-      api.get("users/myself").then(res => this.userData = res.data, error => this.handleError(error))
+    getMyself(): void {
+      api.get("users/myself").then(res => this.user = createNewUser(res.data), error => this.handleError(error))
     },
 
-    submitTest() {
+    submitTest(): void {
       if (this.timeIsUp) {
         this.$toast.add({ severity: 'warn', summary: 'Упс', detail: "Время теста вышло!", life: 3000 });
       }
       api.post("questions/validate", this.testData).then(
           res => {
-            this.testData = res.data;
+            this.testData = createNewTestForPassing(res.data);
             this.testFinished = true;
           },
           error => this.handleError(error)
       )
     },
 
-    handleError(error) {
+    handleError(error): void {
       let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
       if (message.includes("Данный тест повторно вы сможете пройти")) {
         this.$toast.add({ severity: 'info', summary: 'Ожидание', detail: message, life: 3000 });
@@ -231,31 +219,32 @@ export default {
       }
     },
 
-    isQuestionHasAnswer(question) {
+    isQuestionHasAnswer(question: Question): boolean {
       for (const answer of question.answers) {
-        if (answer.is_valid) return true;
+        if (answer.isValid) return true;
       }
       return false
     },
 
-    questionCorrect(question) {
+    questionCorrect(question: Question): boolean {
       for (const answer of question.answers) {
-        if (!this.testFinished && !this.answerCorrect(answer)) return false;
-        if (this.testFinished && answer.true_valid !== answer.is_valid) return false;
+        if (!this.testFinished && !answer.isCorrect) return false;
+        if (this.testFinished && answer.trueValid !== answer.isValid) return false;
       }
       return true
     },
 
-    startTimer() {
-      if (this.testData.completion_time_seconds > 0) {
-        this.secondsLeft = this.testData.completion_time_seconds
+    startTimer(): void {
+      if (this.testData.completionTimeSeconds > 0) {
+        this.secondsLeft = this.testData.completionTimeSeconds
         setTimeout(this.timer, 1000)
-      } else if (this.testData.completion_time_seconds <= 0) {
-        this.timeIsUp = true;
+      } else if (this.testData.completionTimeSeconds === -1) {
+        // this.timeIsUp = true;
+        return
       }
     },
 
-    timer() {
+    timer(): void {
       if (this.testFinished) return;
 
       if (this.secondsLeft > 0) {

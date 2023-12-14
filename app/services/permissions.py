@@ -26,12 +26,12 @@ async def check_permission_to_question_group(
         return
 
     result = await mongodb.questions_collection.find_one(
-        {"_id": ObjectId(question_group_id)}, {"user_id": 1}
+        {"_id": ObjectId(question_group_id)}, {"userId": 1}
     )
     if result is None:
         raise DoesNotExistError
 
-    if not str(result.get("user_id")) == user_id:
+    if not str(result.get("userId")) == user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"You do not have permission to {action} this question group.",

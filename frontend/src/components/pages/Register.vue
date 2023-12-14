@@ -8,15 +8,18 @@
       <div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Username</label>
-          <InputText id="username" v-model="user.username" :class="{'p-invalid': !user.valid.username}"/>
+          <InputText id="username" v-model="user.username" @keydown.enter="handleRegister"
+                     :class="{'p-invalid': !user.valid.username}"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="password">Email</label>
-          <InputText id="password" v-model="user.email" :class="{'p-invalid': !user.valid.email}" type="email"/>
+          <InputText id="password" v-model="user.email" @keydown.enter="handleRegister"
+                     :class="{'p-invalid': !user.valid.email}" type="email"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="password">Password</label>
-          <Password id="password" v-model="user.password" :class="{'p-invalid': !user.valid.password}" :input-style="{width: '100%'}"/>
+          <Password id="password" v-model="user.password" @keydown.enter="handleRegister"
+                    :class="{'p-invalid': !user.valid.password}" :input-style="{width: '100%'}"/>
         </div>
         <div class="flex justify-content-center">
           <Button class="m-2" icon="pi pi-user" @click="handleRegister" label="Регистрация" style="width: 100%" />
@@ -41,7 +44,7 @@ import Menu from "@/components/Menu.vue";
 import Footer from "@/components/Footer.vue";
 import Container from "@/components/Container.vue";
 
-import {RegisterUser} from "@/types";
+import {RegisterUser} from "@/user";
 
 export default {
   components: {

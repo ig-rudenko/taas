@@ -1,6 +1,6 @@
 <template>
-  <h1>Создание нового теста</h1>
-  <div v-if="userData && userData.can_create_tests">
+  <h1>{{createMode?'Создание нового теста':'Обновление теста' }}</h1>
+  <div v-if="user && user.canCreateTests">
     <div>
       <div class="flex flex-column gap-2 my-2">
         <label for="testName">Название теста</label>
@@ -19,12 +19,12 @@
       <div class="flex flex-wrap mt-4">
         <div class="flex flex-column gap-2 m-2">
           <label for="timeout_minutes" class="block mb-2">Кол-во минут ожидания для <br>повторного прохождения теста</label>
-          <InputNumber v-model="testData.timeout_minutes" inputId="timeout_minutes" mode="decimal" showButtons :min="0" aria-describedby="timeout_minutes-help" />
+          <InputNumber v-model="testData.timeoutMinutes" inputId="timeout_minutes" mode="decimal" showButtons :min="0" aria-describedby="timeout_minutes-help" />
           <small id="timeout_minutes-help">`0` - без ограничений</small>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="completion_time_minutes" class="block mb-2"><br>Кол-во минут на прохождение теста</label>
-          <InputNumber v-model="testData.completion_time_minutes" inputId="completion_time_minutes" mode="decimal" showButtons :min="0" aria-describedby="completion_time_minutes-help" />
+          <InputNumber v-model="testData.completionTimeMinutes" inputId="completion_time_minutes" mode="decimal" showButtons :min="0" aria-describedby="completion_time_minutes-help" />
           <small id="completion_time_minutes-help">`0` - без ограничений</small>
         </div>
       </div>
@@ -52,8 +52,8 @@
           <div class="mt-2 flex flex-wrap justify-content-between align-items-center">
             <div>
               <span class="mr-3">Вариант ответа {{aID+1}}</span>
-              <Checkbox class="mr-3" v-model="answer.is_valid" :binary="true"/>
-              <span v-if="answer.is_valid">Верный</span>
+              <Checkbox class="mr-3" v-model="answer.isValid" :binary="true"/>
+              <span v-if="answer.isValid">Верный</span>
             </div>
             <div>
               <Button @click="question.deleteAnswer(aID)" icon="pi pi-times" size="small" severity="danger" rounded outlined aria-label="Cancel" />
@@ -102,7 +102,8 @@ import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
 
 import api from "@/services/api.js";
-import {FullTest, User, Question, Answer} from "@/types.ts";
+import {User} from "@/user.js";
+import {FullTest, Question, Answer, createNewFullTest} from "@/questions.js";
 
 export default {
   name: "CreateTest",
@@ -119,7 +120,7 @@ export default {
   },
 
   props: {
-    userData: {required: true, type: User},
+    user: {required: true, type: User},
     createMode: {required: true, type: Boolean},
     testId: {required: false, type: String},
   },
@@ -173,7 +174,7 @@ export default {
 
     getTestData() {
       api.get("questions/group/"+this.testId+"/full-access").then(
-          res => this.testData = new FullTest(...res.data),
+          res => this.testData = new createNewFullTest(res.data),
           error => this.handleError(error)
       )
     },

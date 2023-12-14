@@ -11,9 +11,9 @@
       <div class="m-0">
         <div v-if="test.description" class="mb-3">{{test.description}}</div>
         <div v-if="showUser"><i class="pi pi-user"/> {{test.username}}</div>
-        <p v-if="test.completion_time_minutes > 0">Время прохождения: <i class="pi pi-stopwatch mr-1"></i>{{test.completion_time_minutes}} минут</p>
+        <p v-if="test.completionTimeMinutes > 0">Время прохождения: <i class="pi pi-stopwatch mr-1"></i>{{test.completionTimeMinutes}} минут</p>
         <p v-else>Время на прохождение теста неограниченно</p>
-        <p v-if="test.timeout_minutes > 0">Время для повторной попытки теста: <i class="pi pi-stopwatch mr-1"></i>{{test.timeout_minutes}} минут</p>
+        <p v-if="test.timeoutMinutes > 0">Время для повторной попытки теста: <i class="pi pi-stopwatch mr-1"></i>{{test.timeoutMinutes}} минут</p>
         <div>
           <Tag @click="$emit('tagClick', tag)" v-for="tag in test.tags" :value="tag" class="mr-2 cursor-pointer"/>
         </div>
@@ -27,7 +27,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Tag from "primevue/tag";
 
-import {TestMin} from "@/types.ts"
+import {TestAbout} from "@/questions.js"
 
 export default {
   name: "TestCard",
@@ -37,7 +37,7 @@ export default {
     Tag,
   },
   props: {
-    test: {required: true, type: TestMin},
+    test: {required: true, type: TestAbout},
     editLink: {required: false, type: Boolean, default: false},
     showUser: {required: false, type: Boolean, default: true},
   }

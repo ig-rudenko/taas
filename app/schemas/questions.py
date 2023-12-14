@@ -8,12 +8,12 @@ class Answer(BaseModel):
 
 
 class FullAnswer(Answer):
-    is_valid: bool = Field(default=False)
+    is_valid: bool = Field(default=False, alias="isValid")
 
 
 class AnswerResul(Answer):
-    is_valid: bool
-    true_valid: bool
+    is_valid: bool = Field(default=False, alias="isValid")
+    true_valid: bool = Field(default=False, alias="trueValid")
 
 
 class Question(BaseModel):
@@ -41,7 +41,9 @@ class QuestionGroupToPass(BaseModel):
     questions: list[Question]
     description: str
     completion_time_seconds: int = Field(
-        default=0, description="Время для прохождения теста"
+        default=0,
+        description="Время для прохождения теста",
+        alias="completionTimeSeconds",
     )
 
 
@@ -51,10 +53,14 @@ class UpdateQuestionGroup(BaseModel):
     questions: list[FullQuestion]
     description: str = Field(default="", max_length=2048)
     timeout_minutes: int = Field(
-        default=0, description="Время для повторного прохождения"
+        default=0,
+        description="Время для повторного прохождения",
+        alias="timeoutMinutes",
     )
     completion_time_minutes: int = Field(
-        default=0, description="Время для прохождения теста"
+        default=0,
+        description="Время для прохождения теста",
+        alias="completionTimeMinutes",
     )
 
 
@@ -65,18 +71,22 @@ class CreateQuestionGroup(UpdateQuestionGroup):
 class FullQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
-    user_id: str
+    user_id: str = Field(..., alias="userId")
     tags: list[str]
     questions: list[FullQuestion]
     description: str
     timeout_minutes: int = Field(
-        default=0, description="Время для повторного прохождения"
+        default=0,
+        description="Время для повторного прохождения",
+        alias="timeoutMinutes",
     )
     completion_time_minutes: int = Field(
-        default=0, description="Время для прохождения теста"
+        default=0,
+        description="Время для прохождения теста",
+        alias="completionTimeMinutes",
     )
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = Field(..., alias="createdAt")
+    updated_at: datetime = Field(..., alias="updatedAt")
 
 
 class ValidateQuestionGroup(BaseModel):
@@ -87,13 +97,21 @@ class ValidateQuestionGroup(BaseModel):
 class MinimalQuestionGroup(BaseModel):
     id: str = Field(..., alias="_id")
     name: str
-    user_id: str
+    user_id: str = Field(..., alias="userId")
     username: str
     description: str
-    created_at: datetime
-    updated_at: datetime
-    timeout_minutes: int = Field(..., description="Время для повторного прохождения")
-    completion_time_minutes: int = Field(..., description="Время для прохождения теста")
+    created_at: datetime = Field(..., alias="createdAt")
+    updated_at: datetime = Field(..., alias="updatedAt")
+    timeout_minutes: int = Field(
+        ...,
+        description="Время для повторного прохождения",
+        alias="timeoutMinutes",
+    )
+    completion_time_minutes: int = Field(
+        ...,
+        description="Время для прохождения теста",
+        alias="completionTimeMinutes",
+    )
     tags: list[str]
 
 
@@ -102,10 +120,14 @@ class QuestionGroupResult(BaseModel):
     name: str
     tags: list[str]
     description: str
-    timeout_minutes: int = Field(..., description="Время для повторного прохождения")
-    completion_time_minutes: int = Field(..., description="Время для прохождения теста")
-    created_at: datetime
-    updated_at: datetime
+    timeout_minutes: int = Field(
+        ..., description="Время для повторного прохождения", alias="timeoutMinutes"
+    )
+    completion_time_minutes: int = Field(
+        ..., description="Время для прохождения теста", alias="completionTimeMinutes"
+    )
+    created_at: datetime = Field(..., alias="createdAt")
+    updated_at: datetime = Field(..., alias="updatedAt")
     questions: list[QuestionResult]
-    total_score: int
-    user_score: int
+    total_score: int = Field(..., alias="totalScore")
+    user_score: int = Field(..., alias="userScore")

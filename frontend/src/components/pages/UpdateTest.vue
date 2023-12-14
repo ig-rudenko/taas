@@ -1,9 +1,9 @@
 <template>
-  <Menu :user="userData"/>
+  <Menu :user="user"/>
   <Toast />
 
-  <Container v-if="userData">
-    <CreateUpdateTest :create-mode="false" :test-id="testId" :user-data="userData" />
+  <Container v-if="user">
+    <CreateUpdateTest :create-mode="false" :test-id="testId" :user="user" />
   </Container>
 
   <Footer/>
@@ -11,7 +11,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import ScrollTop from "primevue/scrolltop";
 import Toast from "primevue/toast";
 
@@ -20,6 +20,7 @@ import Container from "@/components/Container.vue";
 import CreateUpdateTest from "@/components/CreateUpdateTest.vue";
 import Footer from "@/components/Footer.vue";
 import Menu from "@/components/Menu.vue";
+import {createNewUser, User} from "@/user";
 
 export default {
   name: "CreateTest",
@@ -34,7 +35,7 @@ export default {
 
   data() {
     return {
-      userData: null
+      user: null as User
     }
   },
 
@@ -44,17 +45,17 @@ export default {
   },
 
   computed: {
-    loggedIn() {
+    loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
-    testId() {
+    testId(): string {
       return this.$route.params.id
     }
   },
 
   methods: {
     getMyself() {
-      api.get("users/myself").then(res => this.userData = res.data, error => this.handleError(error))
+      api.get("users/myself").then(res => this.user = createNewUser(res.data), error => this.handleError(error))
     },
 
     handleError(error) {

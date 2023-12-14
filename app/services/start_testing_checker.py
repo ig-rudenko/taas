@@ -15,7 +15,7 @@ async def get_testing_group(user: User, group_id: str) -> dict:
     group_data = group.model_dump(by_alias=True)
     # Если для теста нет ограничения по времени.
     if group.completion_time_minutes == 0:
-        group_data["completion_time_minutes"] = -1
+        group_data["completionTimeMinutes"] = -1
         return group_data
 
     cache_key = _get_cache_key(user, group_id)
@@ -27,12 +27,12 @@ async def get_testing_group(user: User, group_id: str) -> dict:
             _create_started_test_data(group),
             expire=group.timeout_minutes * 60 + group.completion_time_minutes * 60,
         )
-        group_data["completion_time_seconds"] = group.completion_time_minutes * 60
+        group_data["completionTimeSeconds"] = group.completion_time_minutes * 60
         return group_data
 
     else:
         await validate_question_group_time_not_expired(user, group_id)
-        group_data["completion_time_seconds"] = int(
+        group_data["completionTimeSeconds"] = int(
             (test_started_data["expired"] - datetime.now()).total_seconds()
         )
         return group_data

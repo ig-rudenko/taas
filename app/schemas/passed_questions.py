@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class PassedQuestion(BaseModel):
-    user_id: str
-    question_group_id: str
-    created_at: datetime
-    total_score: int
-    user_score: int
+    user_id: str = Field(..., alias="userId")
+    question_group_id: str = Field(..., alias="questionGroupId")
+    created_at: datetime = Field(..., alias="createdAt")
+    total_score: int = Field(..., alias="totalScore")
+    user_score: int = Field(..., alias="userScore")
 
 
 class PassedQuestionsDetail(PassedQuestion):
-    question_group_name: str
+    question_group_name: str = Field(..., alias="questionGroupName")

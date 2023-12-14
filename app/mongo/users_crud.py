@@ -8,7 +8,7 @@ from ..services.encrypt import encrypt_password
 async def get_all_raw_users() -> list:
     users = []
     async for user in mongodb.users_collection.find():
-        user['_id'] = str(user['_id'])
+        user["_id"] = str(user["_id"])
         users.append(user)
     return users
 
@@ -26,8 +26,8 @@ async def get_user(**kwargs) -> User:
 
 async def create_user(user: CreateUser) -> User:
     user.password = encrypt_password(user.password)
-    user_data = user.model_dump()
-    user_data.update({"is_superuser": False, "can_create_tests": False})
+    user_data = user.model_dump(by_alias=True)
+    user_data.update({"isSuperuser": False, "canCreateTests": False})
     result = await mongodb.users_collection.insert_one(user_data)
     return await get_user(_id=result.inserted_id)
 
@@ -35,7 +35,7 @@ async def create_user(user: CreateUser) -> User:
 async def update_user(user_id: str, new_data: UpdateUser) -> None:
     result = await mongodb.users_collection.update_one(
         filter={"_id": ObjectId(user_id)},
-        update={"$set": new_data.model_dump()},
+        update={"$set": new_data.model_dump(by_alias=True)},
     )
     if result.matched_count == 0:
         raise DoesNotExistError("User does not exist")

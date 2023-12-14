@@ -8,11 +8,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Menubar from "primevue/menubar";
-import api from "@/services/api.js";
 import themeSwitch from "@/theming.js";
-import {User} from "@/types.ts";
+import {User} from "@/user";
+
 
 export default {
   name: "Home",
@@ -24,10 +24,17 @@ export default {
     user: {required: false, type: User, default: null},
   },
 
+  data() {
+    return {
+      themeIcon: themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun"
+    }
+  },
+
   computed: {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
     },
+
     menuItems() {
       let data = [
         {
@@ -44,7 +51,7 @@ export default {
 
       if (this.loggedIn) {
 
-        if (this.user && this.user.can_create_tests) {
+        if (this.user && this.user.canCreateTests) {
           data.push({
             label: 'Создать тест',
             icon: 'pi pi-check-circle',
@@ -52,7 +59,7 @@ export default {
           })
         }
 
-        if (this.user && this.user.is_superuser) {
+        if (this.user && this.user.isSuperuser) {
           data.push({
             label: 'Пользователи',
             icon: 'pi pi-user',
@@ -82,7 +89,7 @@ export default {
       data.push(
           {
             label: "",
-            icon: () => themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun",
+            icon: this.themeIcon,
             command: () => this.toggleTheme()
           }
       )
@@ -95,6 +102,11 @@ export default {
     toggleTheme() {
       this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", (e) => {})
       themeSwitch.newTheme(themeSwitch.other)
+      this.changeThemeIcon()
+    },
+
+    changeThemeIcon(): string {
+      this.themeIcon = themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun"
     },
 
     logout() {  // #

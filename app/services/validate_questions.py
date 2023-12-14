@@ -60,8 +60,8 @@ async def validate_questions(
             answers_status.append(
                 AnswerResul(
                     text=valid_answer.text,
-                    is_valid=user_answer_is_valid,
-                    true_valid=valid_answer.is_valid,
+                    isValid=user_answer_is_valid,
+                    trueValid=valid_answer.is_valid,
                 )
             )
 
@@ -84,11 +84,11 @@ async def validate_questions(
         name=valid_answers.name,
         tags=valid_answers.tags,
         description=valid_answers.description,
-        created_at=valid_answers.created_at,
-        updated_at=valid_answers.updated_at,
-        timeout_minutes=valid_answers.timeout_minutes,
-        completion_time_minutes=valid_answers.completion_time_minutes,
+        createdAt=valid_answers.created_at,
+        updatedAt=valid_answers.updated_at,
+        timeoutMinutes=valid_answers.timeout_minutes,
+        completionTimeMinutes=valid_answers.completion_time_minutes,
         questions=questions_group_status,
-        total_score=total_questions,
-        user_score=user_score,
+        totalScore=total_questions,
+        userScore=user_score,
     )

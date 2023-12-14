@@ -16,23 +16,29 @@
     </div>
   </div>
 
-  <div v-if="showUsersTests && data">
-    <TestCard v-for="test in data" :test="test" :edit-link="true" :show-user="false"/>
+  <div v-if="showUsersTests && tests">
+    <TestCard v-for="test in tests" :test="test" :edit-link="true" :show-user="false"/>
   </div>
 
-  <div v-if="data && !data.length">
+  <div v-if="tests && !tests.length">
     Вы не создали ни единого теста
   </div>
 
 </template>
 
-<script>
+<script lang="ts">
+import Toast from "primevue/toast";
+
 import api from "@/services/api.js";
 import TestCard from "@/components/TestCard.vue";
+import {createNewTestAboutList, TestAbout} from "@/questions";
 
 export default {
   name: "UsersTestsList",
-  components: {TestCard},
+  components: {
+    TestCard,
+    Toast,
+  },
 
   props: {
     userID: {required: true, type: String},
@@ -40,21 +46,20 @@ export default {
 
   data() {
     return {
-      data: null,
+      tests: null as Array<TestAbout>,
       showUsersTests: false,
     }
   },
 
   mounted() {
     api.get("users/"+this.userID+"/questions").then(
-        value => this.data = value.data,
+        value => this.tests = createNewTestAboutList(value.data),
         error => {
           let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
           this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
         }
     )
   },
-
 
 }
 </script>

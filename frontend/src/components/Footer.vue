@@ -16,7 +16,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import Divider from "primevue/divider";
 
 export default {

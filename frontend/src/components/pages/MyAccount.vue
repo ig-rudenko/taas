@@ -2,7 +2,7 @@
   <Account/>
 </template>
 
-<script>
+<script lang="ts">
 import Account from "@/components/pages/Account.vue";
 
 export default {

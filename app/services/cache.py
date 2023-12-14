@@ -88,7 +88,7 @@ class CacheService(AbstractCache):
         redis_host = os.environ.get("REDIS_HOST", "localhost")
         redis_port = int(os.environ.get("REDIS_PORT", 6379))
         redis_db = int(os.environ.get("REDIS_DB", 3))
-        if redis_host and redis_port and redis_db:
+        if redis_host and redis_port and redis_db and False:
             self._cache: AbstractCache = RedisCache(redis_host, redis_port, redis_db)
         else:
             self._cache: AbstractCache = InMemoryCache()

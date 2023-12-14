@@ -2,35 +2,35 @@
   <Menu :user="currentUser"/>
   <Toast/>
 
-  <Container v-if="userData">
+  <Container v-if="user">
 
-    <UserDetail :user-data="userData" />
+    <UserDetail :user="user" />
 
     <div v-if="isMyAccount" class="mt-2">
       <div class="m-3 ml-2">
-        <ChangePasswordForm :new-passwords="newPasswords" @error="e => handleError(e)" @change="passwordHasBeenChanged" />
+        <ChangePasswordForm @error="e => handleError(e)" @change="passwordHasBeenChanged" />
       </div>
 
       <div class="flex flex-wrap">
         <div class="flex flex-column gap-2 m-2">
           <label for="username">First Name</label>
-          <InputText id="first_name" v-model="userData.first_name"/>
+          <InputText id="first_name" v-model="user.firstName"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Surname</label>
-          <InputText id="surname" v-model="userData.surname"/>
+          <InputText id="surname" v-model="user.surname"/>
         </div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Last Name</label>
-          <InputText id="last_name" v-model="userData.last_name"/>
+          <InputText id="last_name" v-model="user.lastName"/>
         </div>
       </div>
       <Button class="m-2" label="Обновить" @click="updateUserData" />
     </div>
 
-    <UsersTestsList :userID="userData._id" />
+    <UsersTestsList :userID="user._id" />
 
-    <PassedTestsList v-if="userData" :userID="userData._id"/>
+    <PassedTestsList v-if="user" :userID="user._id"/>
 
   </Container>
 
@@ -55,7 +55,7 @@ import UserDetail from "@/components/UserDetail.vue";
 import ChangePasswordForm from "@/components/ChangePasswordForm.vue";
 import UsersTestsList from "@/components/UsersTestsList.vue";
 
-import {User} from "@/types.ts";
+import {createNewUser, User} from "@/user.js";
 
 export default defineComponent({
   name: "Account",
@@ -75,14 +75,10 @@ export default defineComponent({
 
   data() {
     return {
-      userData: null as User,
+      user: null as User,
       currentUser: null as User,
       showPassedTests: true,
       showChangePasswordModal: false,
-      newPasswords: {
-        password1: "",
-        password2: ""
-      }
     }
   },
 
@@ -113,8 +109,8 @@ export default defineComponent({
     getCurrentUser(): void {
       api.get("users/myself").then(
           res => {
-            this.currentUser = new User(...res.data)
-            if (this.isMyAccount) {this.userData = res.data}
+            this.currentUser = createNewUser(res.data)
+            if (this.isMyAccount) {this.user = this.currentUser}
           },
           error => this.handleError(error)
       )
@@ -124,13 +120,13 @@ export default defineComponent({
       if (this.isMyAccount) return;
 
       api.get("users/"+this.accountUsername).then(
-          res => this.userData = new User(...res.data),
+          res => this.user = createNewUser(res.data),
           error => this.handleError(error)
       )
     },
 
     updateUserData(): void {
-      api.patch("users/myself", this.userData).then(
+      api.patch("users/myself", this.user).then(
           () => {this.$toast.add({ severity: 'success', summary: 'Success', detail: "Данные пользователя обновлены", life: 3000 });},
           error => this.handleError(error)
       )
