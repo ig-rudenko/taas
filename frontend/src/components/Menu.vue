@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Menubar from "primevue/menubar";
-import themeSwitch from "@/theming.js";
+import themeSwitch from "@/theming";
 import {User} from "@/user";
 
 
@@ -101,7 +101,7 @@ export default {
   methods: {
     toggleTheme() {
       this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", (e) => {})
-      themeSwitch.newTheme(themeSwitch.other)
+      themeSwitch.toggle()
       this.changeThemeIcon()
     },
 
