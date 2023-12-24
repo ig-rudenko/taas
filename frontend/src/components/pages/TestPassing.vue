@@ -123,8 +123,6 @@ export default {
   mounted() {
     if (!this.loggedIn) this.$router.push("/login")
 
-    this.getMyself();
-
     api.get("questions/group/"+this.testID).then(
         res => {
           this.testData = createNewTestForPassing(res.data);

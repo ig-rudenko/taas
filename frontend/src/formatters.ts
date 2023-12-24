@@ -44,10 +44,8 @@ function findCodeBlocksAndFormat(text: string): string {
         if (language) {
             result += highlightTextToCode(language[2], language[1])
         } else {
-            result += blocks[i]
+            result += format_to_html(blocks[i])
         }
-
-        result += "<br>"
     }
     return result
 }

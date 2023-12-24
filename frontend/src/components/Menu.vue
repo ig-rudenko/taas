@@ -4,6 +4,12 @@
       <template #start>
         <div class="mx-3">TaaS</div>
       </template>
+      <template v-if="user" #end>
+        <div class="flex align-items-center mr-3 cursor-pointer" @click="$router.push('/account')">
+          <img :src="'https://ui-avatars.com/api/?size=32&name='+user.username+'&font-size=0.33&background=random&rounded=true'" class="mr-2" :alt="user.username">
+          {{user.username}}
+        </div>
+      </template>
     </Menubar>
   </div>
 </template>
@@ -68,11 +74,6 @@ export default {
         }
 
         data.push({
-          label: 'Аккаунт',
-          icon: 'pi pi-user',
-          command: () => this.$router.push('/account')
-        },
-        {
           label: 'Выйти',
           icon: 'pi pi-sign-out',
           command: () => this.logout()
