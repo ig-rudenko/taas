@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="user"/>
+  <Menu/>
   <Toast/>
 
   <Container>
@@ -42,7 +42,6 @@ import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
 import TestCard from "@/components/TestCard.vue";
 import {createNewTestAboutList, TestAbout} from "@/questions";
-import {createNewUser, User} from "@/user";
 
 export default {
   name: "TestsList",
@@ -63,7 +62,6 @@ export default {
       allTests: null as Array<TestAbout>,
       search: "",
       selectedTags: [] as Array<string>,
-      user: null as User,
     }
   },
 
@@ -74,7 +72,7 @@ export default {
     filteredTests() {
       if (!this.allTests) return [];
       return this.allTests.filter(
-          test => {
+          (test: TestAbout) => {
             return this.filterByTestName(test) && this.filterByTags(test)
           }
       )
@@ -82,8 +80,6 @@ export default {
   },
 
   mounted() {
-    if (this.loggedIn) this.getMyself();
-
     api.get("questions/groups").then(
         res => {
           this.allTests = createNewTestAboutList(res.data)
@@ -100,17 +96,8 @@ export default {
       return this.search.length === 0 || test.name.includes(this.search)
     },
     filterByTags(test: TestAbout): boolean {
-      return this.selectedTags.length === 0 || this.selectedTags.every(tag => {return test.tags.indexOf(tag) >= 0})
+      return this.selectedTags.length === 0 || this.selectedTags.every((tag: string) => {return test.tags.indexOf(tag) >= 0})
     },
-    getMyself(): void {
-      api.get("users/myself").then(
-          res => this.user = createNewUser(res.data),
-          error => {
-            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
-      )
-    }
   }
 }
 </script>

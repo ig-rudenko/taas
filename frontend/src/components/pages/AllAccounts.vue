@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="user"/>
+  <Menu/>
   <Toast/>
 
   <Container>
@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       users: null as Array<User>,
-      user: null as User,
     }
   },
 
@@ -47,15 +46,10 @@ export default {
 
   mounted() {
     if (!this.loggedIn) this.$router.push("/login")
-    this.getMyself()
     this.getAllUsersList()
   },
 
   methods: {
-
-    getMyself(): void {
-      api.get("users/myself").then(res => this.user = createNewUser(res.data), error => this.handleError(error))
-    },
 
     getAllUsersList(): void {
       api.get("users/").then(

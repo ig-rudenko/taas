@@ -61,7 +61,7 @@
 import ProgressBar from "primevue/progressbar";
 import Toast from 'primevue/toast';
 
-import api from "@/services/api.js";
+import api from "@/services/api";
 import {PassedQuestion} from "@/questions";
 
 export default {

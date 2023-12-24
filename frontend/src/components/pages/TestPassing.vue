@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="user"/>
+  <Menu/>
   <Toast/>
 
   <div v-if="testData" class="sticky top-0 p-3 p-card border-bottom-1 border-200 flex justify-content-between align-items-center" style="z-index: 999">
@@ -96,7 +96,6 @@ import Menu from "@/components/Menu.vue";
 import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
 import {Answer, createNewTestForPassing, Question, TestForPassing} from "@/questions";
-import {createNewUser, User} from "@/user";
 
 export default {
   name: "TestPassing",
@@ -116,7 +115,6 @@ export default {
     return {
       testData: null as TestForPassing,
       testFinished: false,
-      user: null as User,
       timeIsUp: false,
       secondsLeft: 0,
     }
@@ -180,7 +178,7 @@ export default {
   },
 
   methods: {
-    formatText(text): string {
+    formatText(text: string): string {
       if (!text) return ""
       return findCodeBlocksAndFormat(text)
     },
@@ -191,10 +189,6 @@ export default {
       } else {
         return ["p-3", "flex", "flex-row", "border-left-3", "border-red-600"]
       }
-    },
-
-    getMyself(): void {
-      api.get("users/myself").then(res => this.user = createNewUser(res.data), error => this.handleError(error))
     },
 
     submitTest(): void {
@@ -210,7 +204,7 @@ export default {
       )
     },
 
-    handleError(error): void {
+    handleError(error: any): void {
       let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
       if (message.includes("Данный тест повторно вы сможете пройти")) {
         this.$toast.add({ severity: 'info', summary: 'Ожидание', detail: message, life: 3000 });
@@ -239,7 +233,6 @@ export default {
         this.secondsLeft = this.testData.completionTimeSeconds
         setTimeout(this.timer, 1000)
       } else if (this.testData.completionTimeSeconds === -1) {
-        // this.timeIsUp = true;
         return
       }
     },

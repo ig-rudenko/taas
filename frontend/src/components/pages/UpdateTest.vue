@@ -1,9 +1,9 @@
 <template>
-  <Menu :user="user"/>
+  <Menu/>
   <Toast />
 
   <Container v-if="user">
-    <CreateUpdateTest :create-mode="false" :test-id="testId" :user="user" />
+    <CreateUpdateTest :create-mode="false" :test-id="testId" />
   </Container>
 
   <Footer/>
@@ -33,20 +33,16 @@ export default {
     Toast,
   },
 
-  data() {
-    return {
-      user: null as User
-    }
-  },
-
   mounted() {
     if (!this.loggedIn) this.$router.push("/login")
-    this.getMyself()
   },
 
   computed: {
     loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
+    },
+    user(): User | null {
+      return this.$store.state.auth.user
     },
     testId(): string {
       return this.$route.params.id
@@ -54,11 +50,7 @@ export default {
   },
 
   methods: {
-    getMyself() {
-      api.get("users/myself").then(res => this.user = createNewUser(res.data), error => this.handleError(error))
-    },
-
-    handleError(error) {
+    handleError(error: any) {
       let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
       this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },

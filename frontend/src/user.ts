@@ -59,7 +59,14 @@ class User {
         public surname: string,
         public lastName: string,
         public email?: string,
-        public registrationDate?: string
+        public registrationDate?: string,
+    ) {}
+}
+
+class UserTokens {
+    constructor(
+        public accessToken: string | null = null,
+        public refreshToken: string | null = null
     ) {}
 }
 
@@ -79,4 +86,4 @@ class ChangePassword {
     }
 }
 
-export {User, LoginUser, RegisterUser, ChangePassword, createNewUser}
+export {User, LoginUser, RegisterUser, ChangePassword, createNewUser, UserTokens}

@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import Button from "primevue/button";
-import {User} from "@/user.js";
+import {User} from "@/user";
 
 export default {
   name: "UserDetail",

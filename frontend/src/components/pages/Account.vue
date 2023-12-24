@@ -1,5 +1,5 @@
 <template>
-  <Menu :user="currentUser"/>
+  <Menu/>
   <Toast/>
 
   <Container v-if="user">
@@ -76,7 +76,6 @@ export default defineComponent({
   data() {
     return {
       user: null as User,
-      currentUser: null as User,
       showPassedTests: true,
       showChangePasswordModal: false,
     }
@@ -84,8 +83,6 @@ export default defineComponent({
 
   mounted() {
     if (!this.loggedIn && this.isMyAccount) this.$router.push("/login")
-
-    this.getCurrentUser()
     this.getUserData()
   },
 
@@ -106,19 +103,7 @@ export default defineComponent({
 
   methods: {
 
-    getCurrentUser(): void {
-      api.get("users/myself").then(
-          res => {
-            this.currentUser = createNewUser(res.data)
-            if (this.isMyAccount) {this.user = this.currentUser}
-          },
-          error => this.handleError(error)
-      )
-    },
-
     getUserData(): void {
-      if (this.isMyAccount) return;
-
       api.get("users/"+this.accountUsername).then(
           res => this.user = createNewUser(res.data),
           error => this.handleError(error)

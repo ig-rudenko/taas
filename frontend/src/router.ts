@@ -1,4 +1,4 @@
-import {createRouter} from "vue-router";
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 
 import Register from "@/components/pages/Register.vue";
 import Login from "@/components/pages/Login.vue";
@@ -12,7 +12,7 @@ import CreateTest from "@/components/pages/CreateTest.vue";
 import UpdateTest from "@/components/pages/UpdateTest.vue";
 
 
-const routes = [
+const routes: RouteRecordRaw[] = [
     { path: "/", component: Home },
     { path: "/register", component: Register },
     { path: "/login", component: Login },
@@ -25,9 +25,9 @@ const routes = [
     { path: "/users", component: AllAccounts },
 ]
 
-export default function (history) {
+export default function createAppRouter() {
     return createRouter({
-        history,
-        routes
-    })
+        history: createWebHistory(),
+        routes,
+    });
 }

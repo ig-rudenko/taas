@@ -6,12 +6,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "Container"
-}
-</script>
-
 <style scoped>
 .main-container {
   width: 60%;

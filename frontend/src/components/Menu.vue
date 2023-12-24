@@ -20,10 +20,6 @@ export default {
     Menubar,
   },
 
-  props: {
-    user: {required: false, type: User, default: null},
-  },
-
   data() {
     return {
       themeIcon: themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun"
@@ -33,6 +29,10 @@ export default {
   computed: {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
+    },
+
+    user(): User | null {
+      return this.$store.state.auth.user
     },
 
     menuItems() {
@@ -100,12 +100,12 @@ export default {
 
   methods: {
     toggleTheme() {
-      this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", (e) => {})
+      this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", () => {})
       themeSwitch.toggle()
       this.changeThemeIcon()
     },
 
-    changeThemeIcon(): string {
+    changeThemeIcon() {
       this.themeIcon = themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun"
     },
 

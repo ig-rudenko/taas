@@ -3,7 +3,7 @@
 </template>
 <script>
 
-import themeSwitch from "@/theming.ts";
+import themeSwitch from "@/theming";
 
 export default {
   name: "App",

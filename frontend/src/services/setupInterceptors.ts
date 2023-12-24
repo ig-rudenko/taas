@@ -1,7 +1,7 @@
 import axiosInstance from "./api";
 import TokenService from "./token.service";
 
-const setup = (store) => {
+const setup = (store: any) => {
     axiosInstance.interceptors.request.use(
         (config) => {
             const token = TokenService.getLocalAccessToken();

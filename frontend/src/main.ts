@@ -1,21 +1,19 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 import PrimeVue from "primevue/config";
-import { createWebHistory } from "vue-router";
 import ToastService from 'primevue/toastservice';
+import 'primeicons/primeicons.css';
 
-import "./main.css"
-import "./styles.min.css"
-import 'primeicons/primeicons.css'
-import App from './App.vue'
-import createRouter from "@/router.js";
-
+import "@/assets/main.css";
+import "@/assets/styles.min.css";
 import store from "@/store";
+import App from './App.vue';
+import createRouter from "@/router";
 import setupInterceptors from './services/setupInterceptors';
 
 setupInterceptors(store);
 const app = createApp(App);
 app.use(PrimeVue, { ripple: true });
-app.use(ToastService)
+app.use(ToastService);
 app.use(store);
-app.use(createRouter(createWebHistory()));
+app.use(createRouter());
 app.mount('#app');

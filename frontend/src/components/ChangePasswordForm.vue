@@ -23,7 +23,7 @@ import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 
-import api from "@/services/api.js";
+import api from "@/services/api";
 import {ChangePassword} from "@/user";
 
 export default {
@@ -49,7 +49,7 @@ export default {
 
       api.patch("users/myself/password", {password: this.newPasswords.password1}).then(
           () => this.$emit("change"),
-          e => this.$emit("error", e)
+          (e: any) => this.$emit("error", e)
       )
     }
   }

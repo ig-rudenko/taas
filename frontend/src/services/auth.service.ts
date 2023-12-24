@@ -1,20 +1,21 @@
 import api from "./api";
 import TokenService from "./token.service";
+import {LoginUser, RegisterUser, UserTokens} from "@/user";
+import UserService from "@/services/user.service";
 
 class AuthService {
-    login({ username, password }) {
+    login(user: LoginUser) {
         return api
             .post("/auth/token", {
-                username,
-                password
+                username: user.username,
+                password: user.password
             })
             .then(
                 response => {
                     if (response.data.accessToken) {
-                        TokenService.setUser(response.data);
+                        TokenService.setUser(new UserTokens(response.data.accessToken, response.data.refreshToken || null));
                     }
-
-                    return response.data;
+                    return response.data
                 },
                 reason => {
                     console.log(reason)
@@ -25,13 +26,14 @@ class AuthService {
 
     logout() {
         TokenService.removeUser();
+        UserService.removeUser();
     }
 
-    register({ username, email, password }) {
+    register(user: RegisterUser) {
         return api.post("/auth/register", {
-            username,
-            email,
-            password
+            username: user.username,
+            email: user.email,
+            password: user.password
         });
     }
 }

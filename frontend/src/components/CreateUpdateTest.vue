@@ -101,9 +101,9 @@ import Message from "primevue/message";
 import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
 
-import api from "@/services/api.js";
-import {User} from "@/user.js";
-import {FullTest, Question, Answer, createNewFullTest} from "@/questions.js";
+import api from "@/services/api";
+import {User} from "@/user";
+import {FullTest, Question, Answer, createNewFullTest} from "@/questions";
 
 export default {
   name: "CreateTest",
@@ -120,7 +120,6 @@ export default {
   },
 
   props: {
-    user: {required: true, type: User},
     createMode: {required: true, type: Boolean},
     testId: {required: false, type: String},
   },
@@ -155,6 +154,9 @@ export default {
   computed: {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
+    },
+    user(): User | null {
+      return this.$store.state.auth.user
     },
     submitButtonLabel() {
       return this.createMode?"Создать тест":"Обновить тест"

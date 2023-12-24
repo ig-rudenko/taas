@@ -16,15 +16,8 @@
 
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Divider from "primevue/divider";
-
-export default {
-  name: "Footer",
-  components: {
-    Divider,
-  }
-}
 </script>
 
 <style>

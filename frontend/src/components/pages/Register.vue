@@ -63,25 +63,24 @@ export default {
     };
   },
 
-  computed: {  // #
+  computed: {
     loggedIn(): boolean {
       return this.$store.state.auth.status.loggedIn;
     },
   },
-  mounted() {  // #
+  mounted() {
     if (this.loggedIn) {
       this.$router.push("/");
     }
   },
 
   methods: {
-
     handleRegister(): void {
       if (!this.user.isValid) return;
 
       this.$store.dispatch("auth/register", this.user).then(
           () => this.$router.push("/login"),
-          error => {
+          (error: any) => {
             console.log(error)
             let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
             this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });

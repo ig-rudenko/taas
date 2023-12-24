@@ -1,6 +1,6 @@
 <template>
   <Toast />
-  <Menu :user="user"/>
+  <Menu/>
 
     <div class="flex flex-wrap align-items-center justify-content-center">
       <div class="m-3 text-center">
@@ -33,33 +33,6 @@ export default {
     Menu,
     Toast,
   },
-  data() {
-    return {
-      user: null as User,
-    }
-  },
-
-  mounted() {
-    if (this.loggedIn) this.getMyself();
-  },
-
-  computed: {
-    loggedIn() {
-      return this.$store.state.auth.status.loggedIn;
-    },
-  },
-
-  methods: {
-    getMyself() {
-      api.get("users/myself").then(
-          res => this.user = createNewUser(res.data),
-          error => {
-            let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
-      )
-    }
-  }
 }
 </script>
 

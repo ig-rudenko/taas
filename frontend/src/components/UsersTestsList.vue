@@ -29,7 +29,7 @@
 <script lang="ts">
 import Toast from "primevue/toast";
 
-import api from "@/services/api.js";
+import api from "@/services/api";
 import TestCard from "@/components/TestCard.vue";
 import {createNewTestAboutList, TestAbout} from "@/questions";
 

@@ -5,18 +5,12 @@ import 'prismjs/components/prism-python.min.js';
 import "prismjs/components/prism-go.min.js"
 
 
-function format_to_html(string) {
+function format_to_html(str: string): string {
     let n_re = new RegExp('\n', 'g');
-    return string.replace(n_re, "<br>")
+    return str.replace(n_re, "<br>")
 }
 
-/**
- *
- * @param {String} text
- * @param {String} languageCode
- * @returns {*|string}
- */
-function highlightTextToCode(text, languageCode) {
+function highlightTextToCode(text: string, languageCode: string): string {
     try {
         let formattedText = "<code>"
         let textLines = text.split('\n')
@@ -40,11 +34,7 @@ function highlightTextToCode(text, languageCode) {
 }
 
 
-/**
- *
- * @param {String} text
- */
-function findCodeBlocksAndFormat(text) {
+function findCodeBlocksAndFormat(text: string): string {
     const blocks = text.match(RegExp('```(.*?)```|(.+?)(?=```)', "sg"))
     if (!blocks) return format_to_html(text);
 

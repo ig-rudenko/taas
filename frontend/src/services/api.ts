@@ -5,7 +5,6 @@ const instance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    mode: 'no-cors', // disable CORS check
     withCredentials: false // do not send cookies
 });
 

@@ -27,7 +27,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Tag from "primevue/tag";
 
-import {TestAbout} from "@/questions.js"
+import {TestAbout} from "@/questions"
 
 export default {
   name: "TestCard",
@@ -36,6 +36,7 @@ export default {
     Card,
     Tag,
   },
+  emits: ["tagClick"],
   props: {
     test: {required: true, type: TestAbout},
     editLink: {required: false, type: Boolean, default: false},
