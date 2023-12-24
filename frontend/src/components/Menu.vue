@@ -76,7 +76,7 @@ export default {
         data.push({
           label: 'Выйти',
           icon: 'pi pi-sign-out',
-          command: () => this.logout()
+          command: this.logout
         });
 
       } else {
@@ -91,10 +91,9 @@ export default {
           {
             label: "",
             icon: this.themeIcon,
-            command: () => this.toggleTheme()
+            command: this.toggleTheme
           }
       )
-
       return data
     }
   },
@@ -103,17 +102,11 @@ export default {
     toggleTheme() {
       this.$primevue.changeTheme(themeSwitch.current, themeSwitch.other, "theme-link", () => {})
       themeSwitch.toggle()
-      this.changeThemeIcon()
-    },
-
-    changeThemeIcon() {
       this.themeIcon = themeSwitch.current.includes("light")?"pi pi-moon":"pi pi-sun"
     },
 
     logout() {  // #
-      this.$store.dispatch("auth/logout").then(
-          () => this.$router.push("/login"),
-      );
+      this.$store.dispatch("auth/logout").then(() => this.$router.push("/login"));
     },
   }
 }
