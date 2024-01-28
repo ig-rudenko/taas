@@ -32,6 +32,7 @@ import Toast from "primevue/toast";
 import api from "@/services/api";
 import TestCard from "@/components/TestCard.vue";
 import {createNewTestAboutList, TestAbout} from "@/questions";
+import {HandleError} from "@/helper";
 
 export default {
   name: "UsersTestsList",
@@ -54,10 +55,7 @@ export default {
   mounted() {
     api.get("users/"+this.userID+"/questions").then(
         value => this.tests = createNewTestAboutList(value.data),
-        error => {
-          let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-        }
+        error => HandleError(this, error)
     )
   },
 

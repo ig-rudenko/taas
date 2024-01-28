@@ -1,4 +1,5 @@
 import axiosInstance from "./api";
+import router from "@/router";
 import TokenService from "./token.service";
 
 const setup = (store: any) => {
@@ -34,11 +35,17 @@ const setup = (store: any) => {
                             "auth/token/refresh",
                             { refreshToken: refreshToken },
                             originalConfig
-                        );
+                        )
+                            .then(
+                                value => value,
+                                reason => reason.response
+                            )
+                            .catch(reason => reason.response);
 
                         if (rs.status !== 200) {
                             store.dispatch("auth/logout")
-                            return rs
+                            await router.push("/login");
+                            return Promise.reject(err)
                         }
 
                         const { accessToken } = rs.data;
@@ -48,7 +55,6 @@ const setup = (store: any) => {
 
                         return axiosInstance(originalConfig);
                     } catch (_error) {
-                        localStorage.removeItem("user")
                         return Promise.reject(_error);
                     }
                 }
@@ -58,5 +64,6 @@ const setup = (store: any) => {
         }
     );
 };
+
 
 export default setup;

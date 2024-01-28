@@ -45,6 +45,7 @@ import Footer from "@/components/Footer.vue";
 import Container from "@/components/Container.vue";
 
 import {RegisterUser} from "@/user";
+import {HandleError} from "@/helper";
 
 export default {
   components: {
@@ -80,11 +81,7 @@ export default {
 
       this.$store.dispatch("auth/register", this.user).then(
           () => this.$router.push("/login"),
-          (error: any) => {
-            console.log(error)
-            let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
-            this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-          }
+          (error: any) => HandleError(this, error)
       );
     },
 

@@ -56,6 +56,8 @@ import ChangePasswordForm from "@/components/ChangePasswordForm.vue";
 import UsersTestsList from "@/components/UsersTestsList.vue";
 
 import {createNewUser, User} from "@/user.js";
+import {AxiosError, AxiosResponse} from "axios";
+import {HandleError} from "@/helper";
 
 export default defineComponent({
   name: "Account",
@@ -105,21 +107,16 @@ export default defineComponent({
 
     getUserData(): void {
       api.get("users/"+this.accountUsername).then(
-          res => this.user = createNewUser(res.data),
-          error => this.handleError(error)
+          (res: AxiosResponse) => this.user = createNewUser(res.data),
+          (error: AxiosError<any>) => HandleError(this, error),
       )
     },
 
     updateUserData(): void {
       api.patch("users/myself", this.user).then(
-          () => {this.$toast.add({ severity: 'success', summary: 'Success', detail: "Данные пользователя обновлены", life: 3000 });},
-          error => this.handleError(error)
+          () => this.$toast.add({ severity: 'success', summary: 'Success', detail: "Данные пользователя обновлены", life: 3000 }),
+          (error: AxiosError<any>) => HandleError(this, error)
       )
-    },
-
-    handleError(error: any): void {
-      let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },
 
     passwordHasBeenChanged(): void {

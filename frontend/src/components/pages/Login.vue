@@ -8,7 +8,7 @@
       <div>
         <div class="flex flex-column gap-2 m-2">
           <label for="username">Username</label>
-          <InputText id="username" :class="{'p-invalid': !user.valid.username}"
+          <InputText autofocus id="username" :class="{'p-invalid': !user.valid.username}"
                      v-model="user.username" @keydown.enter="handleLogin"/>
         </div>
         <div class="flex flex-column gap-2 m-2">

@@ -104,6 +104,8 @@ import Toast from "primevue/toast";
 import api from "@/services/api";
 import {User} from "@/user";
 import {FullTest, Question, Answer, createNewFullTest} from "@/questions";
+import {AxiosError, AxiosResponse} from "axios";
+import {HandleError} from "@/helper";
 
 export default {
   name: "CreateTest",
@@ -161,7 +163,7 @@ export default {
     submitButtonLabel() {
       return this.createMode?"Создать тест":"Обновить тест"
     },
-    httpSubmitMethod() {
+    httpSubmitMethod(): ("post"|"put") {
       return this.createMode?"post":"put"
     },
     httpSubmitUrl() {
@@ -176,24 +178,21 @@ export default {
 
     getTestData() {
       api.get("questions/group/"+this.testId+"/full-access").then(
-          res => this.testData = new createNewFullTest(res.data),
-          error => this.handleError(error)
+          res => this.testData = createNewFullTest(res.data),
+          error => HandleError(this, error)
       )
     },
 
     submitTest() {
-      api[this.httpSubmitMethod](this.httpSubmitUrl, this.testData).then(
+      const method = this.httpSubmitMethod === "post"?api.post:api.put
+
+      method(this.httpSubmitUrl, this.testData).then(
           () => {
             this.$toast.add({ severity: 'success', summary: 'Success', detail: this.responseSuccessText, life: 3000 });
             if (this.createMode) this.$router.push("/tests");
           },
-          error => this.handleError(error)
+          (error: AxiosError<any>) => HandleError(this, error)
       )
-    },
-
-    handleError(error) {
-      let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },
 
   },

@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
+import {createRouter, createWebHistory, Router, RouteRecordRaw} from "vue-router";
 
 import Register from "@/components/pages/Register.vue";
 import Login from "@/components/pages/Login.vue";
@@ -25,9 +25,9 @@ const routes: RouteRecordRaw[] = [
     { path: "/users", component: AllAccounts },
 ]
 
-export default function createAppRouter() {
-    return createRouter({
-        history: createWebHistory(),
-        routes,
-    });
-}
+const router: Router = createRouter({
+    history: createWebHistory(),
+    routes,
+});
+
+export default router;

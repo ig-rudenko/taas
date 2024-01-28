@@ -7,13 +7,17 @@ import "@/assets/main.css";
 import "@/assets/styles.min.css";
 import store from "@/store";
 import App from './App.vue';
-import createRouter from "@/router";
+import router from "@/router";
 import setupInterceptors from './services/setupInterceptors';
+import {Router} from "vue-router";
 
 setupInterceptors(store);
 const app = createApp(App);
+
 app.use(PrimeVue, { ripple: true });
+app.use(router);
+app.config.globalProperties.$router = router as Router;
+
 app.use(ToastService);
 app.use(store);
-app.use(createRouter());
 app.mount('#app');

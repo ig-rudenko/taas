@@ -45,14 +45,6 @@ export default {
     },
   },
 
-  methods: {
-    handleError(error: any): void {
-      let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-    },
-
-  }
-
 }
 </script>
 

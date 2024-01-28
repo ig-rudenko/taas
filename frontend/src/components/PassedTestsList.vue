@@ -63,6 +63,7 @@ import Toast from 'primevue/toast';
 
 import api from "@/services/api";
 import {PassedQuestion} from "@/questions";
+import {HandleError} from "@/helper";
 
 export default {
   name: "PassedTestsList",
@@ -85,10 +86,7 @@ export default {
   mounted() {
     api.get("users/"+this.userID+"/passed-questions").then(
         value => this.data = this.getPassedQuestionsList(value.data),
-        error => {
-          let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-        }
+        error => HandleError(this, error)
     )
   },
 

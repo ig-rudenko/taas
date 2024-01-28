@@ -21,6 +21,7 @@ import api from "@/services/api.js";
 import UserDetail from "@/components/UserDetail.vue";
 import Container from "@/components/Container.vue";
 import {createNewUser, User} from "@/user";
+import {HandleError} from "@/helper";
 
 export default {
   name: "AllAccounts",
@@ -54,13 +55,8 @@ export default {
     getAllUsersList(): void {
       api.get("users/").then(
           res => this.users = this.getUsersList(res.data),
-          error => this.handleError(error)
+          error => HandleError(this, error)
       )
-    },
-
-    handleError(error: any): void {
-      let message = (error.response && error.response.data && error.response.data.detail) || error.response.data || error.toString();
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     },
 
     getUsersList(usersData: Array<any>): Array<User> {

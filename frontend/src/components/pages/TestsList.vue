@@ -42,6 +42,7 @@ import api from "@/services/api.js";
 import Footer from "@/components/Footer.vue";
 import TestCard from "@/components/TestCard.vue";
 import {createNewTestAboutList, TestAbout} from "@/questions";
+import {HandleError} from "@/helper";
 
 export default {
   name: "TestsList",
@@ -84,10 +85,7 @@ export default {
         res => {
           this.allTests = createNewTestAboutList(res.data)
         },
-        error => {
-          let message = (error.response && error.response.data && error.response.data.detail) || error.message || error.toString();
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
-        }
+        error => HandleError(this, error)
     )
   },
 

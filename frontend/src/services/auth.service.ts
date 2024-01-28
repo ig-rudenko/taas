@@ -13,7 +13,7 @@ class AuthService {
             .then(
                 response => {
                     if (response.data.accessToken) {
-                        TokenService.setUser(new UserTokens(response.data.accessToken, response.data.refreshToken || null));
+                        TokenService.set(new UserTokens(response.data.accessToken, response.data.refreshToken || null));
                     }
                     return response.data
                 },
@@ -25,7 +25,7 @@ class AuthService {
     }
 
     logout() {
-        TokenService.removeUser();
+        TokenService.remove();
         UserService.removeUser();
     }
 
