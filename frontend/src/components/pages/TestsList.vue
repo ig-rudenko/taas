@@ -16,13 +16,13 @@
         </div>
       </div>
     </div>
+  </Container>
 
-    <div class="flex flex-column">
+    <div class="flex flex-wrap px-3 justify-content-center">
       <div v-for="test in filteredTests">
         <TestCard @tagClick="tag => selectedTags.push(tag)" :test="test"/>
       </div>
     </div>
-  </Container>
 
   <Footer/>
   <ScrollTop/>

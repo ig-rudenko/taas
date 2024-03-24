@@ -1,5 +1,5 @@
 <template>
-  <Card class="m-2">
+  <Card class="m-2 border-1 border-300 shadow-3 zoomin">
     <template #title>
       <div class="flex align-items-center">
         <span class="mr-3">{{test.name}}</span>

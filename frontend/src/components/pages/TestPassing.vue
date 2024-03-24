@@ -77,6 +77,10 @@
 
   </Container>
 
+  <Container v-else class="align-items-center">
+    <div class="flex flex-wrap justify-content-center align-items-center"><img src="../../assets/time-wait.svg" alt="time-wait"/></div>
+  </Container>
+
   <Footer/>
   <ScrollTop/>
 

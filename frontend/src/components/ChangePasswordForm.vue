@@ -1,6 +1,10 @@
 <template>
+  <i class="pi pi-lock mr-2"/>
   <span @click="showChangePasswordModal=true" class="cursor-pointer">Сменить пароль</span>
-  <Dialog v-model:visible="showChangePasswordModal" modal header="Смена пароля" >
+  <Dialog v-model:visible="showChangePasswordModal" modal>
+    <template #header>
+      <i class="pi pi-lock mr-2"/><span>Смена пароля</span>
+    </template>
     <div class="flex flex-column gap-2 m-2">
       <label for="password1">Введите новый пароль</label>
       <Password id="password1" v-model="newPasswords.password1"/>
@@ -25,6 +29,7 @@ import Password from "primevue/password";
 
 import api from "@/services/api";
 import {ChangePassword} from "@/user";
+import {AxiosError} from "axios";
 
 export default {
   name: "ChangePasswordForm",
@@ -47,10 +52,12 @@ export default {
     changePassword() {
       if (!this.newPasswords.valid) return;
 
-      api.patch("users/myself/password", {password: this.newPasswords.password1}).then(
+      api.patch("users/myself/password", {password: this.newPasswords.password1})
+          .then(
           () => this.$emit("change"),
           (e: any) => this.$emit("error", e)
       )
+          .catch((reason: AxiosError) => this.$emit("error", reason))
     }
   }
 }

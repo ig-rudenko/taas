@@ -2,14 +2,11 @@
   <Menu/>
   <Toast/>
 
-  <Container>
-    <div class="flex flex-wrap justify-content-center">
-      <div v-for="user in users" class="p-3">
+    <div class="flex flex-wrap justify-content-center mt-4">
+      <div v-for="user in users" class="p-2 border-1 px-2 py-1 border-300 shadow-3 zoomin border-round-md m-2">
         <UserDetail :user="user" :show-link="true" />
       </div>
     </div>
-
-  </Container>
 
 </template>
 

@@ -11,21 +11,30 @@
         <ChangePasswordForm @error="e => handleError(e)" @change="passwordHasBeenChanged" />
       </div>
 
-      <div class="flex flex-wrap">
-        <div class="flex flex-column gap-2 m-2">
-          <label for="username">First Name</label>
-          <InputText id="first_name" v-model="user.firstName"/>
+      <div v-if="editMode">
+        <div class="flex flex-wrap">
+          <div class="flex flex-column gap-2 m-2">
+            <label for="username">First Name</label>
+            <InputText id="first_name" v-model="user.firstName"/>
+          </div>
+          <div class="flex flex-column gap-2 m-2">
+            <label for="username">Surname</label>
+            <InputText id="surname" v-model="user.surname"/>
+          </div>
+          <div class="flex flex-column gap-2 m-2">
+            <label for="username">Last Name</label>
+            <InputText id="last_name" v-model="user.lastName"/>
+          </div>
         </div>
-        <div class="flex flex-column gap-2 m-2">
-          <label for="username">Surname</label>
-          <InputText id="surname" v-model="user.surname"/>
-        </div>
-        <div class="flex flex-column gap-2 m-2">
-          <label for="username">Last Name</label>
-          <InputText id="last_name" v-model="user.lastName"/>
-        </div>
+        <Button class="m-2" label="Обновить" @click="updateUserData();editMode=false" />
       </div>
-      <Button class="m-2" label="Обновить" @click="updateUserData" />
+
+      <div v-else class="p-2 flex flex-wrap align-items-center">
+        <i class="pi pi-user mr-2"/>
+        <div class="mr-2">{{user.surname}} {{user.firstName}} {{user.lastName}}</div>
+        <i @click="editMode=true" class="pi pi-pencil cursor-pointer text-teal-400"/>
+      </div>
+
     </div>
 
     <UsersTestsList :userID="user._id" />
@@ -80,6 +89,7 @@ export default defineComponent({
       user: null as User,
       showPassedTests: true,
       showChangePasswordModal: false,
+      editMode: false,
     }
   },
 
@@ -121,7 +131,9 @@ export default defineComponent({
 
     passwordHasBeenChanged(): void {
       this.$toast.add({ severity: 'success', summary: 'Success', detail: "Пароль был обновлен", life: 3000 });
-    }
+    },
+
+    handleError(e: AxiosError) {return HandleError(this, e)}
   }
 })
 </script>

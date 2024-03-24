@@ -4,6 +4,7 @@
     <Divider/>
 
     <div class="flex justify-content-center my-5 align-items-center">
+      <div class="mr-5">&copy; 2023-2024</div>
       <div class="mr-5">
         Tests as a Service
       </div>
