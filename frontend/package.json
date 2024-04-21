@@ -13,7 +13,7 @@
     "primeicons": "^6.0.1",
     "primevue": "^3.42.0",
     "prismjs": "^1.29.0",
-    "vee-validate": "^4.12.2",
+    "vee-validate": "^4.12.4",
     "vue": "^3.2.47",
     "vue-router": "^4.2.5",
     "vuex": "^4.1.0"
