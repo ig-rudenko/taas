@@ -11,7 +11,7 @@
   "dependencies": {
     "axios": "^1.6.4",
     "primeicons": "^6.0.1",
-    "primevue": "^3.42.0",
+    "primevue": "^3.46.0",
     "prismjs": "^1.29.0",
     "vee-validate": "^4.12.2",
     "vue": "^3.2.47",
