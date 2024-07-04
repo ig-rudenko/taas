@@ -16,8 +16,10 @@
     </div>
   </div>
 
-  <div v-if="showUsersTests && tests">
-    <TestCard v-for="test in tests" :test="test" :edit-link="true" :show-user="false"/>
+  <div v-if="showUsersTests && tests" class="flex flex-wrap px-3 justify-content-center gap-3">
+    <div v-for="test in tests">
+      <TestCard :test="test" :show-user="false"/>
+    </div>
   </div>
 
   <div v-if="tests && !tests.length">

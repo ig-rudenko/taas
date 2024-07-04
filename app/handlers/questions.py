@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from fastapi import APIRouter, HTTPException, Depends
 from starlette import status
 
@@ -31,7 +29,7 @@ from ..services.permissions import (
     check_permission_to_take_question_group,
 )
 from ..services.start_testing_checker import (
-    get_testing_group,
+    start_testings,
     validate_question_group_time_not_expired,
 )
 from ..services.validate_questions import validate_questions, ValidateException
@@ -62,18 +60,9 @@ async def create_question_group_view(
     return await create_question_group(question, user.id)
 
 
-@router.get("/group/{group_id}", response_model=QuestionGroupToPass)
+@router.get("/group/{group_id}", response_model=FullQuestionGroup)
 @handle_mongo_exceptions
 async def question_group_view(group_id: str, user: User = Depends(get_current_user)):
-    await check_permission_to_question_group(user.id, group_id, "view")
-    return await get_testing_group(user, group_id)
-
-
-@router.get("/group/{group_id}/full-access", response_model=FullQuestionGroup)
-@handle_mongo_exceptions
-async def question_group_full_view(
-    group_id: str, user: User = Depends(get_current_user)
-):
     await check_permission_to_question_group(user.id, group_id, "full-access")
     return await get_question_group(group_id)
 
@@ -94,6 +83,13 @@ async def delete_question_group_view(
 ):
     await check_permission_to_question_group(user.id, group_id, "delete")
     await delete_question_group(group_id)
+
+
+@router.post("/group/{group_id}/start-testing", response_model=QuestionGroupToPass)
+@handle_mongo_exceptions
+async def start_test_view(group_id: str, user: User = Depends(get_current_user)):
+    await check_permission_to_question_group(user.id, group_id, "view")
+    return await start_testings(user, group_id)
 
 
 @router.post("/validate", response_model=QuestionGroupResult)

@@ -2,7 +2,7 @@ import os
 
 from fastapi import FastAPI
 
-from .handlers import questions, auth, users, healthcheck
+from .handlers import questions, auth, users, healthcheck, open_questions
 from .mongo import mongodb
 from .services.cache import CacheService
 
@@ -19,6 +19,7 @@ app = FastAPI(
 app.include_router(prefix="/api/v1", router=auth.router)
 app.include_router(prefix="/api/v1", router=questions.router)
 app.include_router(prefix="/api/v1", router=users.router)
+app.include_router(prefix="/api/v1", router=open_questions.router)
 app.include_router(router=healthcheck.router)
 
 

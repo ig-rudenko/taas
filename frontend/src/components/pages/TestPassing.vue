@@ -127,7 +127,7 @@ export default {
   mounted() {
     if (!this.loggedIn) this.$router.push("/login")
 
-    api.get("questions/group/"+this.testID).then(
+    api.post("questions/group/"+this.testID+"/start-testing").then(
         res => {
           this.testData = createNewTestForPassing(res.data);
           this.startTimer();

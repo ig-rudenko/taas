@@ -7,9 +7,10 @@ from app.mongo.questions_crud import get_question_group
 from app.schemas.questions import FullQuestionGroup
 from app.schemas.users import User
 from app.services.cache import CacheService
+from app.services.open_questions import set_question_group_is_open
 
 
-async def get_testing_group(user: User, group_id: str) -> dict:
+async def start_testings(user: User, group_id: str) -> dict:
     group = await get_question_group(group_id)
 
     group_data = group.model_dump(by_alias=True)
@@ -22,15 +23,18 @@ async def get_testing_group(user: User, group_id: str) -> dict:
 
     test_started_data = await CacheService().get(cache_key)
     if test_started_data is None:
+        # Первое открытие теста.
         await CacheService().set(
             cache_key,
             _create_started_test_data(group),
             expire=group.timeout_minutes * 60 + group.completion_time_minutes * 60,
         )
         group_data["completionTimeSeconds"] = group.completion_time_minutes * 60
+        await set_question_group_is_open(user, group)  # Отмечаем, что тест начался.
         return group_data
 
     else:
+        # Повторное открытие теста.
         await validate_question_group_time_not_expired(user, group_id)
         group_data["completionTimeSeconds"] = int(
             (test_started_data["expired"] - datetime.now()).total_seconds()

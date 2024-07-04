@@ -8,7 +8,7 @@
 
 <style scoped>
 .main-container {
-  width: 60%;
+  width: 80%;
   margin-bottom: 2rem;
 }
 

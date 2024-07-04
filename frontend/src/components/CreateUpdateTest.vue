@@ -177,7 +177,7 @@ export default {
   methods: {
 
     getTestData() {
-      api.get("questions/group/"+this.testId+"/full-access").then(
+      api.get("questions/group/"+this.testId).then(
           res => this.testData = createNewFullTest(res.data),
           error => HandleError(this, error)
       )
