@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="flex flex-wrap px-3 justify-content-center gap-3">
+    <div v-if="openTests!==null" class="flex flex-wrap px-3 justify-content-center gap-3">
       <div v-for="test in filteredTests">
         <TestCard @tagClick="tag => selectedTags.push(tag)" :test="test" :open-test-times="getTestOpenTime(test)"/>
       </div>
@@ -105,6 +105,7 @@ export default {
 
   methods: {
     getTestOpenTime(test: TestAbout): UserOpenedQuestionTimes | undefined {
+      if (!this.openTests) return undefined;
       return <UserOpenedQuestionTimes | undefined>this.openTests[test._id]
     },
     filterByTestName(test: TestAbout): boolean {

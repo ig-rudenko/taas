@@ -15,7 +15,7 @@ async def set_question_group_is_open(user: User, group: FullQuestionGroup) -> No
     Отмечает в кеше, что пользователь начал проходить тест.
     """
     cache = CacheService()
-    now = datetime.now()
+    now = datetime.now().astimezone()
     timeout_seconds = group.timeout_minutes * 60 + group.completion_time_minutes * 60
 
     data = OpenQuestionSchema(
