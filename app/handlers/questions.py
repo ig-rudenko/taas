@@ -24,6 +24,7 @@ from ..schemas.questions import (
 from ..schemas.users import User
 from ..services.auth import get_current_user
 from ..services.cache import CacheService
+from ..services.open_questions import set_question_group_is_finished
 from ..services.permissions import (
     check_permission_to_question_group,
     check_permission_to_take_question_group,
@@ -46,12 +47,8 @@ async def list_question_groups_view():
     return result
 
 
-@router.post(
-    "/groups", response_model=FullQuestionGroup, status_code=status.HTTP_201_CREATED
-)
-async def create_question_group_view(
-    question: CreateQuestionGroup, user: User = Depends(get_current_user)
-):
+@router.post("/groups", response_model=FullQuestionGroup, status_code=status.HTTP_201_CREATED)
+async def create_question_group_view(question: CreateQuestionGroup, user: User = Depends(get_current_user)):
     if not user.can_create_tests:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -78,9 +75,7 @@ async def update_question_group_view(
 
 @router.delete("/group/{group_id}", status_code=status.HTTP_204_NO_CONTENT)
 @handle_mongo_exceptions
-async def delete_question_group_view(
-    group_id: str, user: User = Depends(get_current_user)
-):
+async def delete_question_group_view(group_id: str, user: User = Depends(get_current_user)):
     await check_permission_to_question_group(user.id, group_id, "delete")
     await delete_question_group(group_id)
 
@@ -101,17 +96,15 @@ async def validate_question_group_view(
     Проверяет переданную пользователем группу вопросов (тест).
     Если за последний час пользователь уже проходил данный тест, то вернется ошибка `403`.
     """
-    await check_permission_to_take_question_group(
-        user_id=user.id, question_group_id=question_group_data.id
-    )
+    await check_permission_to_take_question_group(user_id=user.id, question_group_id=question_group_data.id)
     await validate_question_group_time_not_expired(user, question_group_data.id)
 
     try:
-        validated_question_group = await validate_questions(question_group_data)
+        question_group: FullQuestionGroup = await get_question_group(question_group_data.id)
+        validated_question_group = await validate_questions(question_group_data, question_group)
     except ValidateException as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     else:
-        await create_passed_question(
-            user_id=user.id, question_group=validated_question_group
-        )
+        await create_passed_question(user_id=user.id, question_group=validated_question_group)
+        await set_question_group_is_finished(user, question_group)
         return validated_question_group

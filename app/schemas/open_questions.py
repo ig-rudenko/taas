@@ -7,3 +7,4 @@ class OpenQuestionSchema(BaseModel):
     start_time: datetime = Field(alias="startTime")
     expire_time: datetime = Field(alias="expireTime")
     next_try_time: datetime = Field(alias="nextTryTime")
+    finished_time: datetime | None = Field(None, alias="finishedTime")

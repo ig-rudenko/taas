@@ -14,11 +14,10 @@ class ValidateException(Exception):
 
 async def validate_questions(
     user_answers: ValidateQuestionGroup,
+    valid_answers: FullQuestionGroup,
 ) -> QuestionGroupResult:
     total_questions = len(user_answers.questions)
     user_score = 0
-
-    valid_answers: FullQuestionGroup = await get_question_group(user_answers.id)
 
     if total_questions != len(valid_answers.questions):
         raise ValidateException(
@@ -52,9 +51,7 @@ async def validate_questions(
                 )
 
             # Если вариант ответа пользователя верный.
-            question_is_valid = (
-                question_is_valid and valid_answer.is_valid is user_answer_is_valid
-            )
+            question_is_valid = question_is_valid and valid_answer.is_valid is user_answer_is_valid
 
             # Отмечаем статус варианта ответа.
             answers_status.append(

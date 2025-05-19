@@ -29,7 +29,7 @@
                class="shadow-2 mr-2 cursor-pointer hover:bg-primary-600"/>
         </div>
         <div class="my-2 w-full">
-          <Button v-if="timeToExpire" severity="warning" outlined class="text-sm w-full flex-column">
+          <Button v-if="!openTestTimes.finishedTime && timeToExpire" severity="warning" outlined class="text-sm w-full flex-column">
             <span>Вы не закончили проходить тест</span>
             <span>осталось: {{ timeToExpire }}</span>
           </Button>
