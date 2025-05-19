@@ -48,7 +48,7 @@ async def set_question_group_is_finished(user: User, group: FullQuestionGroup) -
     if open_questions is None or group.id not in open_questions:
         return
 
-    open_questions[group.id]["finishedTime"] = now
+    open_questions[group.id].finished_time = now
     await cache.set(_get_cache_key(user), open_questions, expire=timeout_seconds)
 
 
