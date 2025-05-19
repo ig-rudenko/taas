@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import {createApp} from 'vue';
 import PrimeVue from "primevue/config";
 import ToastService from 'primevue/toastservice';
 import 'primeicons/primeicons.css';
